@@ -1,0 +1,73 @@
+/* @settings
+
+name: Animated Cursor
+id: kotaindah55-animated-cursor
+settings:
+
+    -
+        id: cursor-move-speed
+        title: Cursor speed
+        description: The speed of each cursor movement in miliseconds.
+        type: variable-number
+        format: ms
+        default: 80
+    -
+        id: cursor-blink-rate
+        title: Blink rate
+        description: The length of a full cursor blink cycle in miliseconds.
+        type: variable-number
+        format: ms
+        default: 1000
+    -
+        id: cursor-blink-count
+        title: Blink count
+        description: The limit of a blink count sequence. Resetted each time it's moving. Stop blinking when it sets to 0.
+        type: variable-number
+        default: 10
+    -
+        id: cursor-blink-infinity
+        title: Infinity blinking
+        description: Whether the blinking is infinity. While turned on, "Blink count" setting doesn't have any effect.
+        type: class-toggle
+
+*/
+
+:root {
+    --cursor-move-speed: 80ms;
+    --cursor-move-easing: ease;
+    --cursor-blink-rate: 1000ms;
+    --cursor-blink-count: 10;
+    --cursor-blink-easing: ease-in-out;
+}
+
+@keyframes cm-blink {
+    0%, 20% {
+        opacity: 1;
+    }
+    60%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes cm-blink2 {
+    0%, 20% {
+        opacity: 1;
+    }
+    60%, 100% {
+        opacity: 0;
+    }
+}
+
+.cm-editor.cm-focused>.cm-scroller>.cm-layer.cm-cursorLayer {
+    animation-duration: calc(var(--cursor-blink-rate) / 2);
+    animation-timing-function: var(--cursor-blink-easing);
+    animation-direction: alternate;
+    animation-iteration-count: calc(var(--cursor-blink-count) * 2);
+    body.cursor-blink-infinity & {
+        animation-iteration-count: infinite;
+    }
+    &>.cm-cursor.cm-cursor-animated {
+        transition: all var(--cursor-move-speed) var(--cursor-move-easing);
+        border-left-width: 1.5px;
+    }
+}

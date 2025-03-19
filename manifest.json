@@ -1,0 +1,9 @@
+{
+	"id": "animated-cursor",
+	"name": "Animated Cursor",
+	"version": "1.0.0",
+	"minAppVersion": "1.7.4",
+	"description": "Simple yet elegant animated cursor.",
+	"author": "Kotaindah55 (Sheva Ihza)",
+	"isDesktopOnly": false
+}
