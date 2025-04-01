@@ -23,5 +23,5 @@
       "DOM.AsyncIterable"
     ]
   },
-  "include": ["src/**/*", "main.ts", ".deprecated/isHighlight.ts"]
+  "include": ["src/**/*", "main.ts"]
 }
