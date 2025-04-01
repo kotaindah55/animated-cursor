@@ -1,114 +1,216 @@
-import { combineConfig, Compartment, EditorSelection, Extension, Facet } from "@codemirror/state";
-import { layer, PluginValue, RectangleMarker, ViewPlugin, ViewUpdate } from "@codemirror/view";
-import AnimatedCursorPlugin from "main";
+import { SelectionRange } from "@codemirror/state";
+import { Direction, EditorView, LayerConfig, LayerMarker, MeasureRequest, PluginInstance, ViewUpdate } from "@codemirror/view";
+import { debounce } from "obsidian";
+import { CursorLayerView, CursorPluginInstance } from "./typing";
 
-interface CursorConfig {
-    /** Draw cursor on selection. */
-    drawRangeCursor: boolean;
+/** Ensure that it is a layer config. */
+function _isLayerConfig(object: object): object is LayerConfig {
+	return (
+		"above" in object && typeof object.above == "boolean" &&
+		(!("class" in object) || typeof object.class == "string") &&
+		(!("updateOnDocViewUpdate" in object) || typeof object.updateOnDocViewUpdate == "boolean") &&
+		"update" in object && typeof object.update == "function" &&
+		"markers" in object && typeof object.markers == "function" &&
+		(!("mount" in object) || typeof object.mount == "function") &&
+		(!("destroy" in object) || typeof object.destroy == "function")
+	);
+}
+
+/** Ensure that it is a `MeasureRequest` instance. */
+function _isMeasureReq(object: object): object is MeasureRequest<unknown> {
+	return (
+		"read" in object && typeof object.read == "function" &&
+		(!("write" in object) || typeof object.write == "function")
+	)
+}
+
+/** Ensure that the plugin value is a `CursorLayerView` instance. */
+function _isCursorPlugin(instance: PluginInstance): instance is CursorPluginInstance {
+	let pluginValue = instance.value;
+	return (
+		!!pluginValue &&
+		"view" in pluginValue && pluginValue.view instanceof EditorView &&
+		"layer" in pluginValue && !!pluginValue.layer && _isLayerConfig(pluginValue.layer) &&
+		"measureReq" in pluginValue && !!pluginValue.measureReq && _isMeasureReq(pluginValue.measureReq) &&
+		"drawn" in pluginValue && pluginValue.drawn instanceof Array &&
+		"dom" in pluginValue && pluginValue.dom instanceof HTMLElement &&
+		"scaleX" in pluginValue && typeof pluginValue.scaleX == "number" &&
+		"scaleY" in pluginValue && typeof pluginValue.scaleY == "number" &&
+		"setOrder" in pluginValue && typeof pluginValue.setOrder == "function" &&
+		"measure" in pluginValue && typeof pluginValue.measure == "function" &&
+		"scale" in pluginValue && typeof pluginValue.scale == "function" &&
+		"draw" in pluginValue && typeof pluginValue.draw == "function" &&
+		pluginValue.layer.class == "cm-cursorLayer"
+	);
 }
 
 /**
- * Check whether the cursor config was changed.
+ * Get scroller top and left position. Based on CodeMirror's `getBase()`
+ * function.
  * 
- * Taken from, and modified of codemirror/view's `configChanged` version.
- * Only be found in its internal API.
+ * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */
-function configChanged(update: ViewUpdate): boolean {
-    return update.startState.facet(cursorConfigFacet) != update.state.facet(cursorConfigFacet);
+function _getBaseCoords(view: EditorView): { top: number, left: number } {
+	let scrollerRect = view.scrollDOM.getBoundingClientRect(),
+		left = view.textDirection == Direction.LTR
+			? scrollerRect.left
+			: scrollerRect.right - view.scrollDOM.clientWidth * view.scaleX;
+
+	return {
+		top: scrollerRect.top - view.scrollDOM.scrollTop * view.scaleY,
+		left: left - view.scrollDOM.scrollLeft * view.scaleX
+	}
 }
 
 /**
- * Cursor DOM that will be drawn above the editor, replacing the native
- * one. In fact, Obsidian natively already has this functionality, except
- * it doesn't apply to the primary cursor (i.e. first cursor).
- * 
- * Taken from, and modified version of codemirror/view's `cursorLayer`.
- * Only be found in its internal API.
+ * Debounce the cursor blink by delaying its layer element from being
+ * blink-animated, instead of changing its animation keyframe each layer
+ * update.
  */
-const cursorLayer = layer({
-    // Make the cursor above the text display.
-    above: true,
-    // Class name of cursor's layer (not the cursor).
-    class: "cm-cursorLayer",
-
-    markers(view): RectangleMarker[] {
-        let { state } = view,
-            { drawRangeCursor } = state.facet(cursorConfigFacet),
-            cursors: RectangleMarker[] = [];
-        
-        for (let range of state.selection.ranges) {
-            // Range cursor only be drawn when drawRangeCursor is true.
-            if (!range.empty && !drawRangeCursor) continue;
-
-            let isPrimary = range == state.selection.main,
-                className = "cm-cursor cm-cursor-animated " + (isPrimary ? "cm-cursor-primary" : "cm-cursor-secondary"),
-                cursor = range.empty ? range : EditorSelection.cursor(range.head, range.head > range.anchor ? -1 : 1);
-            
-            for (let piece of RectangleMarker.forRange(view, className, cursor))
-                cursors.push(piece);
-        }
-        return cursors;
-    },
-
-    update(update, dom): boolean {
-        // Reset its blink if the cursor/selection was changed.
-        if (update.transactions.some(tr => tr.selection))
-            dom.style.animationName = dom.style.animationName == "cm-blink" ? "cm-blink2" : "cm-blink";
-
-        return update.docChanged || update.selectionSet || configChanged(update);
-    }
-});
+const _blinkDebouncer = debounce((layerEl: HTMLElement) => {
+	layerEl.addClass("cm-blinkLayer");
+}, 300, true);
 
 /**
- * Facet that stores cursor configuration.
+ * Implementation of `LayerMarker` designated for generating cursor DOM,
+ * with ability to debounce the DOM adjuster. Based on CodeMirror's
+ * `RectangleMarker`.
  * 
- * Taken from, and modified of codemirror/view's `selectionConfig`
- * version. Only be found in its internal API.
+ * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */
-const cursorConfigFacet = Facet.define<CursorConfig, CursorConfig>({
-    combine(value): CursorConfig {
-        return combineConfig(value, { drawRangeCursor: true }, {
-            drawRangeCursor: (a, b) => a || b
-        });
-    }
-});
+class _CursorMarker implements LayerMarker {
+	private className: string;
+
+	readonly left: number;
+	readonly top: number;
+	readonly height: number;
+
+	constructor(className: string, left: number, top: number, height: number) {
+		this.className = className;
+		this.left = left;
+		this.top = top;
+		this.height = height;
+	}
+
+	draw(): HTMLElement {
+		let cursorEl = document.createElement("div");
+		cursorEl.className = this.className;
+		this.adjust(cursorEl);
+		return cursorEl;
+	}
+
+	update(cursorEl: HTMLElement, prev: _CursorMarker): boolean {
+		if (prev.className != this.className)
+			return false;
+
+		// Reuse previous debouncer.
+		this.requestAdjust = prev.requestAdjust ?? this.requestAdjust;
+		// Disable throttling for updating process.
+		this.requestAdjust(this.adjust, cursorEl);
+		return true;
+	}
+
+	eq(other: _CursorMarker): boolean {
+		return (
+			this.left == other.left &&
+			this.top == other.top &&
+			this.height == other.height &&
+			this.className == other.className
+		);
+	}
+
+	/**
+	 * Create a cursor marker from selection range. If it's not an empty
+	 * range, the function will use its head position as the marker
+	 * position.
+	 */
+	static forRange(view: EditorView, className: string, range: SelectionRange): _CursorMarker | null {
+		let cursorPos = view.coordsAtPos(range.head, range.assoc || 1);
+		if (!cursorPos) return null;
+		let baseCoords = _getBaseCoords(view);
+		return new _CursorMarker(
+			className,
+			cursorPos.left - baseCoords.left,
+			cursorPos.top - baseCoords.top,
+			cursorPos.bottom - cursorPos.top
+		);
+	}
+
+	/** Adjust the marker position. Should not be run in updating process. */
+	private adjust = (cursorEl: HTMLElement): void => {
+		cursorEl.style.left = this.left + "px";
+		cursorEl.style.top = this.top + "px";
+		cursorEl.style.height = this.height + "px";
+	}
+
+	/**
+	 * Debounce the adjuster within 10 miliseconds. Use this to update the
+	 * marker.
+	 */
+	private requestAdjust = debounce((adjuster: typeof this.adjust, cursorEl: HTMLElement) => {
+		adjuster(cursorEl);
+	}, 10, false);
+}
+
+/** Hook the builtin cursor plugin provided by Obsidian. */
+export function hookCursorPlugin(view: EditorView): CursorLayerView | null | undefined {
+	// @ts-ignore We ignore view.plugins from being checked because it's
+	// labeled internally as a private property.
+	let pluginInstances = view.plugins as PluginInstance[];
+	return pluginInstances.find(
+		(instance): instance is CursorPluginInstance => {
+			return !!instance.value && _isCursorPlugin(instance);
+		}
+	)?.value;
+}
 
 /**
- * Used as facet reconfiguration by dispatching it through
- * `EditorView.dispatch()`. Intended to be used during setting update.
+ * Patch the cursor plugin and return the original config that can be
+ * restored again.
+ * 
+ * **Should only be excuted once after successful hook attemp.**
  */
-const configurator = new Compartment();
+export function patchCursorPlugin(cursorPlugin: CursorLayerView): LayerConfig {
+	// Store the original config.
+	let originalConfig = Object.assign({}, cursorPlugin.layer);
 
-/** Core of Animated Cursor plugin. */
-export const animatedCursor = (plugin: AnimatedCursorPlugin) => {
-    return ViewPlugin.define(view => {
+	// Patch the update handler.
+	cursorPlugin.layer.update = function (update: ViewUpdate, dom: HTMLElement) {
+		if ((update.docChanged || update.selectionSet) && update.view.hasFocus) {
+			if (dom.classList.contains("cm-blinkLayer"))
+				dom.classList.remove("cm-blinkLayer");
+			// Debounce the blink.
+			_blinkDebouncer(dom);
+			return true;
+		}
+		return false;
+	}
 
-        let listener = plugin.registerSettingUpdateListener((plugin: AnimatedCursorPlugin) => {
-            // If "drawRangeCursor" wasn't changed, cursorLayer won't be updated.
-            if (plugin.settings.drawRangeCursor == view.state.facet(cursorConfigFacet).drawRangeCursor)
-                return;
+	// Patch the marker generator method.
+	//
+	// Taken from, and modified of codemirror/view's `cursorLayer.markers`
+	// version. Only be found in its internal API.
+	cursorPlugin.layer.markers = function (view: EditorView) {
+		let { state } = view,
+			cursors: _CursorMarker[] = [];
 
-            let { drawRangeCursor } = plugin.settings;
-            view.dispatch({
-                effects: configurator.reconfigure(cursorConfigFacet.of({ drawRangeCursor }))
-            });
-        });
+		for (let range of state.selection.ranges) {
+			// Primary cursor will be drawn as DOM, opposite to what Obsidian
+			// implemented, so the primary is able to be animated.
+			let isPrimary = range == state.selection.main,
+				className = "cm-cursor " + (isPrimary ? "cm-cursor-primary" : "cm-cursor-secondary"),
+				cursorMarker = _CursorMarker.forRange(view, className, range);
 
-        return {
-            destroy(): void {
-                // Detach the listener when animatedCursor was destroyed.
-                plugin.detachSettingUpdateListener(listener);
-            },
-        } as PluginValue
-    }, {
+			if (cursorMarker)
+				cursors.push(cursorMarker);
+		}
+		return cursors;
+	}
 
-        // All extensions above will be held under "animatedCursor" ViewPlugin.
-        provide(): Extension {
-            let { drawRangeCursor } = plugin.settings;
-            return [
-                configurator.of(cursorConfigFacet.of({ drawRangeCursor })),
-                cursorLayer
-            ];
-        },
-    });
+	return originalConfig;
+}
+
+/** Restore the cursor layer config to its initial configuration. */
+export function unpatchCursorPlugin(targetConfig: LayerConfig, originalConfig: LayerConfig): void {
+	Object.assign(targetConfig, originalConfig);
 }

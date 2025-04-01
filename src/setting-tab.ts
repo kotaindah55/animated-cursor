@@ -1,33 +1,20 @@
 import AnimatedCursorPlugin from "main";
-import { App, PluginSettingTab, Setting } from "obsidian"
+import { App, PluginSettingTab } from "obsidian"
 
+/** _Currently not in use._ */
 export class AnimatedCursorSettingTab extends PluginSettingTab {
-    plugin: AnimatedCursorPlugin;
+	plugin: AnimatedCursorPlugin;
 
-    constructor(app: App, plugin: AnimatedCursorPlugin) {
-        super(app, plugin);
-        this.plugin = plugin;
-    }
+	constructor(app: App, plugin: AnimatedCursorPlugin) {
+		super(app, plugin);
+		this.plugin = plugin;
+	}
 
-    display(): void {
-        let { containerEl } = this,
-            { settings } = this.plugin;
+	display(): void {}
 
-        new Setting(containerEl)
-            .setName("Draw range cursor")
-            .setDesc("Whether draw cursor on selection.")
-            .addToggle(toogle => {
-                toogle.setValue(settings.drawRangeCursor);
-                toogle.onChange(val => {
-                    settings.drawRangeCursor = val;
-                    this.plugin.saveSettings();
-                });
-            });
-    }
-
-    hide(): void {
-        // Clear all components when the tab was hidden.
-        this.containerEl.empty();
-        super.hide();
-    }
+	hide(): void {
+		// Clear all components when the tab was hidden.
+		this.containerEl.empty();
+		super.hide();
+	}
 }
