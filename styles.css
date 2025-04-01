@@ -1,7 +1,7 @@
 /* @settings
 
-name: Animated Cursor
-id: kotaindah55-animated-cursor
+name: Smooth Cursor
+id: kotaindah55-smooth-cursor
 settings:
 
     -
@@ -40,34 +40,39 @@ settings:
     --cursor-blink-easing: ease-in-out;
 }
 
-@keyframes cm-blink {
-    0%, 20% {
-        opacity: 1;
-    }
-    60%, 100% {
+@keyframes cm-cursor-blink {
+    0%, 40% {
         opacity: 0;
+    }
+    80%, 100% {
+        opacity: 1;
     }
 }
 
-@keyframes cm-blink2 {
-    0%, 20% {
-        opacity: 1;
+.markdown-source-view.mod-cm6>.cm-editor.cm-focused,
+.table-cell-wrapper>.mod-cm6>.cm-editor.cm-focused {
+    & .cm-content {
+        caret-color: transparent !important;
     }
-    60%, 100% {
-        opacity: 0;
-    }
-}
-
-.cm-editor.cm-focused>.cm-scroller>.cm-layer.cm-cursorLayer {
-    animation-duration: calc(var(--cursor-blink-rate) / 2);
-    animation-timing-function: var(--cursor-blink-easing);
-    animation-direction: alternate;
-    animation-iteration-count: calc(var(--cursor-blink-count) * 2);
-    body.cursor-blink-infinity & {
-        animation-iteration-count: infinite;
-    }
-    &>.cm-cursor.cm-cursor-animated {
-        transition: all var(--cursor-move-speed) var(--cursor-move-easing);
-        border-left-width: 1.5px;
+    &>.cm-scroller>.cm-layer.cm-cursorLayer {
+        &.cm-blinkLayer {
+            animation-name: cm-cursor-blink;
+            animation-duration: calc(var(--cursor-blink-rate) / 2) !important;
+            animation-timing-function: var(--cursor-blink-easing);
+            animation-direction: alternate-reverse;
+            animation-iteration-count: calc(var(--cursor-blink-count) * 2);
+            body.cursor-blink-infinity & {
+                animation-iteration-count: infinite;
+            }
+        }
+        &:not(.cm-blinkLayer) {
+            animation: none;
+        }
+        &>.cm-cursor {
+            transition-property: top, left, height;
+            transition-duration: var(--cursor-move-speed);
+            transition-timing-function: var(--cursor-move-easing);
+            border-left-width: 2px;
+        }
     }
 }
