@@ -2,6 +2,8 @@
 
 Give your cursor a simple, yet smooth, move animation. Inspired by Microsoft Office and VSCode smooth cursor.
 
+![animated-cursor.gif](./docs/assests/animated-cursor.gif)
+
 ## 🚀 Features
 
 - Move and blink animation for the cursor.
