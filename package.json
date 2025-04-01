@@ -1,6 +1,6 @@
 {
 	"name": "smooth-cursor",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Simple yet smooth animated cursor.",
 	"main": "main.js",
 	"scripts": {
