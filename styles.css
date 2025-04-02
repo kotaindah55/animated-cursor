@@ -56,7 +56,7 @@ settings:
     }
     &>.cm-scroller>.cm-layer.cm-cursorLayer {
         &.cm-blinkLayer {
-            animation-name: cm-cursor-blink;
+            animation-name: cm-cursor-blink !important;
             animation-duration: calc(var(--cursor-blink-rate) / 2) !important;
             animation-timing-function: var(--cursor-blink-easing);
             animation-direction: alternate-reverse;
@@ -66,7 +66,9 @@ settings:
             }
         }
         &:not(.cm-blinkLayer) {
-            animation: none;
+            animation-name: none !important;
+            animation-duration: 0 !important;
+            animation: none !important;
         }
         &>.cm-cursor {
             transition-property: top, left, height;

@@ -55,7 +55,6 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 		_iterMarkdownView(this.app, view => {
 			let cursorPlugin = hookCursorPlugin(view.editor.cm);
-			cursorPlugin?.dom.style.setProperty("animation-name", "cm-blink");
 			cursorPlugin?.dom.removeClass("cm-blinkLayer");
 		});
 
@@ -79,11 +78,6 @@ export default class AnimatedCursorPlugin extends Plugin {
 		this.targetLayerConfig = cursorPlugin.layer;
 		this.originalLayerConfig = patchCursorPlugin(cursorPlugin);
 		this.alreadyPatched = true;
-
-		_iterMarkdownView(this.app, view => {
-			let cursorPlugin = hookCursorPlugin(view.editor.cm);
-			cursorPlugin?.dom.style.removeProperty("animation-name");
-		});
 
 		// Detach the handler after a successful attemp.
 		this.app.workspace.off("active-leaf-change", this.tryPatch);
