@@ -69,7 +69,7 @@ function _getBaseCoords(view: EditorView): { top: number, left: number } {
  */
 const _blinkDebouncer = debounce((layerEl: HTMLElement) => {
 	layerEl.addClass("cm-blinkLayer");
-}, 300, true);
+}, 350, true);
 
 /**
  * Implementation of `LayerMarker` designated for generating cursor DOM,
