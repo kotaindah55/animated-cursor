@@ -3,10 +3,13 @@ import { App, MarkdownView, Plugin, WorkspaceLeaf } from "obsidian";
 import { hookCursorPlugin, patchCursorPlugin, unpatchCursorPlugin } from "src/core";
 import { AnimatedCursorSettingTab } from "src/setting-tab";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface AnimatedCursorSettings {}
+export interface AnimatedCursorSettings {
+	useTransform: boolean;
+}
 
-export const DEFAULT_SETTINGS: AnimatedCursorSettings = {}
+export const DEFAULT_SETTINGS: AnimatedCursorSettings = {
+	useTransform: true
+}
 
 function _iterMarkdownView(app: App, callback: (view: MarkdownView) => unknown): void {
 	app.workspace.getLeavesOfType("markdown").forEach(leaf => {
@@ -29,7 +32,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 	async onload(): Promise<void> {
 		await this.loadSettings();
 
-		// this.addSettingTab(new SmoothCursorSettingTab(this.app, this));
+		this.addSettingTab(new AnimatedCursorSettingTab(this.app, this));
 
 		let mdView = this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (mdView)
@@ -78,7 +81,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 		if (!cursorPlugin) return;
 
 		this.targetLayerConfig = cursorPlugin.layer;
-		this.originalLayerConfig = patchCursorPlugin(cursorPlugin);
+		this.originalLayerConfig = patchCursorPlugin(cursorPlugin, this.settings);
 		this.alreadyPatched = true;
 
 		// Detach the handler after a successful attemp.

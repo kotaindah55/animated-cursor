@@ -71,7 +71,7 @@ settings:
             animation: none !important;
         }
         &>.cm-cursor {
-            transition-property: top, left, height;
+            transition-property: transform, top, left;
             transition-duration: var(--cursor-move-speed);
             transition-timing-function: var(--cursor-move-easing);
             border-left-width: 2px;

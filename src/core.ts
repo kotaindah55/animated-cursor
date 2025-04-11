@@ -2,6 +2,7 @@ import { SelectionRange } from "@codemirror/state";
 import { Direction, EditorView, LayerConfig, LayerMarker, MeasureRequest, PluginInstance, ViewUpdate } from "@codemirror/view";
 import { debounce } from "obsidian";
 import { CursorLayerView, CursorPluginInstance } from "./typing";
+import { AnimatedCursorSettings } from "main";
 
 /** Ensure that it is a layer config. */
 function _isLayerConfig(object: object): object is LayerConfig {
@@ -80,16 +81,18 @@ const _blinkDebouncer = debounce((layerEl: HTMLElement) => {
  */
 class _CursorMarker implements LayerMarker {
 	private className: string;
+	private useTransform: boolean;
 
 	readonly left: number;
 	readonly top: number;
 	readonly height: number;
 
-	constructor(className: string, left: number, top: number, height: number) {
+	constructor(className: string, left: number, top: number, height: number, useTransform: boolean) {
 		this.className = className;
-		this.left = left;
-		this.top = top;
-		this.height = height;
+		this.left = Math.round(left);
+		this.top = Math.round(top);
+		this.height = Math.round(height);
+		this.useTransform = useTransform;
 	}
 
 	draw(): HTMLElement {
@@ -100,8 +103,10 @@ class _CursorMarker implements LayerMarker {
 	}
 
 	update(cursorEl: HTMLElement, prev: _CursorMarker): boolean {
-		if (prev.className != this.className)
-			return false;
+		if (
+			prev.className != this.className ||
+			prev.useTransform != this.useTransform
+		) return false;
 
 		// Reuse previous debouncer.
 		this.requestAdjust = prev.requestAdjust ?? this.requestAdjust;
@@ -115,7 +120,8 @@ class _CursorMarker implements LayerMarker {
 			this.left == other.left &&
 			this.top == other.top &&
 			this.height == other.height &&
-			this.className == other.className
+			this.className == other.className &&
+			this.useTransform == other.useTransform
 		);
 	}
 
@@ -124,7 +130,7 @@ class _CursorMarker implements LayerMarker {
 	 * range, the function will use its head position as the marker
 	 * position.
 	 */
-	static forRange(view: EditorView, className: string, range: SelectionRange): _CursorMarker | null {
+	static forRange(view: EditorView, className: string, range: SelectionRange, useTransform: boolean): _CursorMarker | null {
 		let cursorPos = view.coordsAtPos(range.head, range.assoc || 1);
 		if (!cursorPos) return null;
 		let baseCoords = _getBaseCoords(view);
@@ -132,14 +138,22 @@ class _CursorMarker implements LayerMarker {
 			className,
 			cursorPos.left - baseCoords.left,
 			cursorPos.top - baseCoords.top,
-			cursorPos.bottom - cursorPos.top
+			cursorPos.bottom - cursorPos.top,
+			useTransform
 		);
 	}
 
-	/** Adjust the marker position. Should not be run in updating process. */
+	/**
+	 * Adjust the marker position. Should not be run immediately in `update`
+	 * call, use `requestAdjust` instead.
+	 */
 	private adjust = (cursorEl: HTMLElement): void => {
-		cursorEl.style.left = this.left + "px";
-		cursorEl.style.top = this.top + "px";
+		if (this.useTransform) {
+			cursorEl.style.transform = `translateX(${this.left}px) translateY(${this.top}px)`;
+		} else {
+			cursorEl.style.left = this.left + "px";
+			cursorEl.style.top = this.top + "px";
+		}
 		cursorEl.style.height = this.height + "px";
 	}
 
@@ -168,9 +182,9 @@ export function hookCursorPlugin(view: EditorView): CursorLayerView | null | und
  * Patch the cursor plugin and return the original config that can be
  * restored again.
  * 
- * **Should only be excuted once after successful hook attemp.**
+ * **Should not be executed again after successful hook attemp.**
  */
-export function patchCursorPlugin(cursorPlugin: CursorLayerView): LayerConfig {
+export function patchCursorPlugin(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings): LayerConfig {
 	// Store the original config.
 	let originalConfig = Object.assign({}, cursorPlugin.layer);
 
@@ -199,7 +213,7 @@ export function patchCursorPlugin(cursorPlugin: CursorLayerView): LayerConfig {
 			// implemented, so the primary is able to be animated.
 			let isPrimary = range == state.selection.main,
 				className = "cm-cursor " + (isPrimary ? "cm-cursor-primary" : "cm-cursor-secondary"),
-				cursorMarker = _CursorMarker.forRange(view, className, range);
+				cursorMarker = _CursorMarker.forRange(view, className, range, settings.useTransform);
 
 			if (cursorMarker)
 				cursors.push(cursorMarker);

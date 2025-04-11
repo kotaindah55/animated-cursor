@@ -1,7 +1,6 @@
 import AnimatedCursorPlugin from "main";
-import { App, PluginSettingTab } from "obsidian"
+import { App, PluginSettingTab, Setting } from "obsidian"
 
-/** _Currently not in use._ */
 export class AnimatedCursorSettingTab extends PluginSettingTab {
 	plugin: AnimatedCursorPlugin;
 
@@ -10,7 +9,21 @@ export class AnimatedCursorSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	display(): void {}
+	display(): void {
+		new Setting(this.containerEl)
+			.setName("Slightly more smoothly")
+			.setDesc(
+				"If turned on, cursor moves slightly more smoothly, especially when the user moves it continously. " +
+				"There is a downside, the cursor appears blurly."
+			)
+			.addToggle(toggle => {
+				toggle
+					.setValue(this.plugin.settings.useTransform)
+					.onChange(val => this.plugin.settings.useTransform = val);
+			});
+		
+		document.createDocumentFragment();
+	}
 
 	hide(): void {
 		// Clear all components when the tab was hidden.
