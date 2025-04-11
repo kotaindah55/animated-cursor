@@ -37,6 +37,8 @@ export default class AnimatedCursorPlugin extends Plugin {
 		else
 			this.registerEvent(this.app.workspace.on("active-leaf-change", this.tryPatch));
 
+		this.app.workspace.trigger("parse-style-settings");
+
 		console.log("Load Animated Cursor plugin");
 	}
 
