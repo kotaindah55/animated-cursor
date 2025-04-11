@@ -35,6 +35,10 @@ Via [Style Settings][style-settings] plugin you can:
 - set the blink count in a sequence,
 - toggle infinity blinking.
 
+Additionally, in the "Animated Cursor" plugin settings, you have an option to make the cursor move slightly more smoothly:
+- If turned on, move transition uses `transform` property, but the cursor seems to appear blurry.
+- If turned off, it uses `top` and `left` properties.
+
 > [!Note]
 >
 > You can disable the blink by adjust the blink count to zero.
