@@ -14,7 +14,7 @@ export class AnimatedCursorSettingTab extends PluginSettingTab {
 			.setName("Slightly more smoothly")
 			.setDesc(
 				"If turned on, cursor moves slightly more smoothly, especially when the user moves it continously. " +
-				"There is a downside, the cursor appears blurly."
+				"There is a downside, the cursor appears blurry."
 			)
 			.addToggle(toggle => {
 				toggle
