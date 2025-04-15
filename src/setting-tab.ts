@@ -2,14 +2,14 @@ import AnimatedCursorPlugin from "src/main";
 import { App, PluginSettingTab, Setting } from "obsidian"
 
 export class AnimatedCursorSettingTab extends PluginSettingTab {
-	plugin: AnimatedCursorPlugin;
+	public plugin: AnimatedCursorPlugin;
 
 	constructor(app: App, plugin: AnimatedCursorPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
 
-	display(): void {
+	public display(): void {
 		new Setting(this.containerEl)
 			.setName("Slightly more smoothly")
 			.setDesc(
@@ -23,7 +23,7 @@ export class AnimatedCursorSettingTab extends PluginSettingTab {
 			});
 	}
 
-	hide(): void {
+	public hide(): void {
 		// Clear all components when the tab was hidden.
 		this.containerEl.empty();
 		super.hide();
