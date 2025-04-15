@@ -47,7 +47,10 @@ function _isCursorPlugin(instance: PluginInstance): instance is CursorPluginInst
 
 /**
  * Get scroller top and left position. Based on CodeMirror's `getBase()`
- * function.
+ * function with some modifications.
+ * 
+ * MIT licensed, copyright (c) by Marijn Haverbeke and others at
+ * CodeMirror.
  * 
  * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */
@@ -75,7 +78,10 @@ const _blinkDebouncer = debounce((layerEl: HTMLElement) => {
 /**
  * Implementation of `LayerMarker` designated for generating cursor DOM,
  * with ability to debounce the DOM adjuster. Based on CodeMirror's
- * `RectangleMarker`.
+ * `RectangleMarker` with some modifications.
+ * 
+ * MIT licensed, copyright (c) by Marijn Haverbeke and others at
+ * CodeMirror.
  * 
  * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */

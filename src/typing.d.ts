@@ -4,14 +4,24 @@ import { layer, LayerConfig, LayerMarker, LayerView, PluginInstance, PluginValue
 declare module "@codemirror/view" {
 	type LayerConfig = Parameters<typeof layer>[0];
 
-	/** @see https://github.com/codemirror/view/blob/main/src/extension.ts */
+	/**
+	 * MIT licensed, copyright (c) by Marijn Haverbeke and others at
+	 * CodeMirror.
+	 * 
+	 * @see https://github.com/codemirror/view/blob/main/src/extension.ts
+	 */
 	interface MeasureRequest<T> {
 		read(view: EditorView): T;
 		write?(measure: T, view: EditorView): void;
 		key?: unknown;
 	}
 
-	/** @see https://github.com/codemirror/view/blob/main/src/extension.ts */
+	/**
+	 * MIT licensed, copyright (c) by Marijn Haverbeke and others at
+	 * CodeMirror.
+	 * 
+	 * @see https://github.com/codemirror/view/blob/main/src/extension.ts
+	 */
 	interface PluginInstance<T extends PluginValue = PluginValue> {
 		mustUpdate: ViewUpdate | null;
 		value: T | null;
@@ -21,7 +31,12 @@ declare module "@codemirror/view" {
 		deactivate(): void;
 	}
 
-	/** @see https://github.com/codemirror/view/blob/main/src/layer.ts */
+	/**
+	 * MIT licensed, copyright (c) by Marijn Haverbeke and others at
+	 * CodeMirror.
+	 * 
+	 * @see https://github.com/codemirror/view/blob/main/src/layer.ts
+	 */
 	interface LayerView extends PluginValue {
 		readonly view: EditorView;
 		readonly layer: LayerConfig;
