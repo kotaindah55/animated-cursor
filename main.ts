@@ -1,6 +1,6 @@
 import { LayerConfig } from "@codemirror/view";
 import { App, MarkdownView, Plugin, WorkspaceLeaf } from "obsidian";
-import { hookCursorPlugin, patchCursorPlugin, unpatchCursorPlugin } from "src/core";
+import { hookCursorPlugin, patchCursorPlugin, unpatchCursorPlugin } from "src/patch";
 import { AnimatedCursorSettingTab } from "src/setting-tab";
 
 export interface AnimatedCursorSettings {
