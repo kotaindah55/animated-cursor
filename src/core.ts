@@ -1,7 +1,7 @@
 import { SelectionRange } from "@codemirror/state";
 import { Direction, EditorView, LayerConfig, LayerMarker, MeasureRequest, PluginInstance, ViewUpdate } from "@codemirror/view";
 import { debounce } from "obsidian";
-import { CursorLayerView, CursorPluginInstance } from "./typing";
+import { CursorLayerView, CursorPluginInstance } from "./typings";
 import { AnimatedCursorSettings } from "main";
 
 /** Ensure that it is a layer config. */
