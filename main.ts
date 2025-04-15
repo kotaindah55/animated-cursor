@@ -85,32 +85,6 @@ export default class AnimatedCursorPlugin extends Plugin {
 		this.alreadyPatched = true;
 
 		// Detach the handler after a successful attemp.
-		this.app.workspace.off("active-leaf-change", this.tryPatch);
-	}
-
-	/**
-	 * Handler for setting update. Useful for updating `EditorView`s that
-	 * exist in the workspace without restarting the app.
-	 * 
-	 * _Currently not in use._
-	 */
-	onSettingUpdate(): void {
-		this.settingUpdateListeners.forEach(listener => {
-			listener(this);
-		});
-	}
-
-	/**
-	 * Can be an effective way to update all existing EditorView.
-	 * 
-	 * _Currently not in use._
-	 */
-	registerSettingUpdateListener(listener: (plugin: AnimatedCursorPlugin) => unknown): typeof listener {
-		this.settingUpdateListeners.add(listener);
-		return listener;
-	}
-
-	detachSettingUpdateListener(listener: (plugin: AnimatedCursorPlugin) => unknown): void {
-		this.settingUpdateListeners.delete(listener);
+		this.app.workspace.off("active-leaf-change", this._tryPatch);
 	}
 }

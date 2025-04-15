@@ -21,8 +21,6 @@ export class AnimatedCursorSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.useTransform)
 					.onChange(val => this.plugin.settings.useTransform = val);
 			});
-		
-		document.createDocumentFragment();
 	}
 
 	hide(): void {
