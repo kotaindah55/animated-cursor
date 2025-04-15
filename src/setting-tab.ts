@@ -19,7 +19,10 @@ export class AnimatedCursorSettingTab extends PluginSettingTab {
 			.addToggle(toggle => {
 				toggle
 					.setValue(this.plugin.settings.useTransform)
-					.onChange(val => this.plugin.settings.useTransform = val);
+					.onChange(val => {
+						this.plugin.settings.useTransform = val;
+						this.plugin.saveSettings();
+					});
 			});
 	}
 
