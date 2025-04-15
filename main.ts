@@ -19,44 +19,41 @@ function _iterMarkdownView(app: App, callback: (view: MarkdownView) => unknown):
 }
 
 export default class AnimatedCursorPlugin extends Plugin {
-	settings: AnimatedCursorSettings;
-	settingTab: AnimatedCursorSettingTab;
+	public settings: AnimatedCursorSettings;
+	public settingTab: AnimatedCursorSettingTab;
 
 	/** Indicate that the cursor plugin is already patched. */
-	alreadyPatched: boolean = false;
-	targetLayerConfig: LayerConfig;
-	originalLayerConfig: LayerConfig;
-	
-	private settingUpdateListeners = new Set<(plugin: AnimatedCursorPlugin) => unknown>();
+	private _alreadyPatched: boolean = false;
+	private _targetLayerConfig: LayerConfig;
+	private _originalLayerConfig: LayerConfig;
 
-	async onload(): Promise<void> {
+	public async onload(): Promise<void> {
 		await this.loadSettings();
 
 		this.addSettingTab(new AnimatedCursorSettingTab(this.app, this));
 
 		let mdView = this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (mdView)
-			this.tryPatch(mdView.leaf);
+			this._tryPatch(mdView.leaf);
 		else
-			this.registerEvent(this.app.workspace.on("active-leaf-change", this.tryPatch));
+			this.registerEvent(this.app.workspace.on("active-leaf-change", this._tryPatch));
 
 		this.app.workspace.trigger("parse-style-settings");
 
 		console.log("Load Animated Cursor plugin");
 	}
 
-	async loadSettings(): Promise<void> {
+	public async loadSettings(): Promise<void> {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
 
-	async saveSettings(): Promise<void> {
+	public async saveSettings(): Promise<void> {
 		await this.saveData(this.settings);
-		this.onSettingUpdate();
 	}
 
-	onunload(): void {
-		if (this.alreadyPatched)
-			unpatchCursorPlugin(this.targetLayerConfig, this.originalLayerConfig);
+	public onunload(): void {
+		if (this._alreadyPatched)
+			unpatchCursorPlugin(this._targetLayerConfig, this._originalLayerConfig);
 
 		_iterMarkdownView(this.app, view => {
 			let cursorPlugin = hookCursorPlugin(view.editor.cm);
@@ -72,17 +69,17 @@ export default class AnimatedCursorPlugin extends Plugin {
 	 * 
 	 * Used as `"active-leaf-change"` event callback.
 	 */
-	readonly tryPatch = (leaf: WorkspaceLeaf | null): void => {
-		if (this.alreadyPatched || !(leaf?.view instanceof MarkdownView)) return;
+	private readonly _tryPatch = (leaf: WorkspaceLeaf | null): void => {
+		if (this._alreadyPatched || !(leaf?.view instanceof MarkdownView)) return;
 
 		let editorView = leaf.view.editor.cm,
 			cursorPlugin = hookCursorPlugin(editorView);
 
 		if (!cursorPlugin) return;
 
-		this.targetLayerConfig = cursorPlugin.layer;
-		this.originalLayerConfig = patchCursorPlugin(cursorPlugin, this.settings);
-		this.alreadyPatched = true;
+		this._targetLayerConfig = cursorPlugin.layer;
+		this._originalLayerConfig = patchCursorPlugin(cursorPlugin, this.settings);
+		this._alreadyPatched = true;
 
 		// Detach the handler after a successful attemp.
 		this.app.workspace.off("active-leaf-change", this._tryPatch);

@@ -86,48 +86,48 @@ const _blinkDebouncer = debounce((layerEl: HTMLElement) => {
  * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */
 class _CursorMarker implements LayerMarker {
-	private className: string;
-	private useTransform: boolean;
+	private _className: string;
+	private _useTransform: boolean;
 
-	readonly left: number;
-	readonly top: number;
-	readonly height: number;
+	public readonly left: number;
+	public readonly top: number;
+	public readonly height: number;
 
 	constructor(className: string, left: number, top: number, height: number, useTransform: boolean) {
-		this.className = className;
+		this._className = className;
 		this.left = Math.round(left);
 		this.top = Math.round(top);
 		this.height = Math.round(height);
-		this.useTransform = useTransform;
+		this._useTransform = useTransform;
 	}
 
-	draw(): HTMLElement {
+	public draw(): HTMLElement {
 		let cursorEl = document.createElement("div");
-		cursorEl.className = this.className;
-		this.adjust(cursorEl);
+		cursorEl.className = this._className;
+		this._adjust(cursorEl);
 		return cursorEl;
 	}
 
-	update(cursorEl: HTMLElement, prev: _CursorMarker): boolean {
+	public update(cursorEl: HTMLElement, prev: _CursorMarker): boolean {
 		if (
-			prev.className != this.className ||
-			prev.useTransform != this.useTransform
+			prev._className != this._className ||
+			prev._useTransform != this._useTransform
 		) return false;
 
 		// Reuse previous debouncer.
-		this.requestAdjust = prev.requestAdjust ?? this.requestAdjust;
+		this._requestAdjust = prev._requestAdjust ?? this._requestAdjust;
 		// Disable throttling for updating process.
-		this.requestAdjust(this.adjust, cursorEl);
+		this._requestAdjust(this._adjust, cursorEl);
 		return true;
 	}
 
-	eq(other: _CursorMarker): boolean {
+	public eq(other: _CursorMarker): boolean {
 		return (
 			this.left == other.left &&
 			this.top == other.top &&
 			this.height == other.height &&
-			this.className == other.className &&
-			this.useTransform == other.useTransform
+			this._className == other._className &&
+			this._useTransform == other._useTransform
 		);
 	}
 
@@ -136,7 +136,7 @@ class _CursorMarker implements LayerMarker {
 	 * range, the function will use its head position as the marker
 	 * position.
 	 */
-	static forRange(view: EditorView, className: string, range: SelectionRange, useTransform: boolean): _CursorMarker | null {
+	public static forRange(view: EditorView, className: string, range: SelectionRange, useTransform: boolean): _CursorMarker | null {
 		let cursorPos = view.coordsAtPos(range.head, range.assoc || 1);
 		if (!cursorPos) return null;
 		let baseCoords = _getBaseCoords(view);
@@ -153,8 +153,8 @@ class _CursorMarker implements LayerMarker {
 	 * Adjust the marker position. Should not be run immediately in `update`
 	 * call, use `requestAdjust` instead.
 	 */
-	private adjust = (cursorEl: HTMLElement): void => {
-		if (this.useTransform) {
+	private _adjust = (cursorEl: HTMLElement): void => {
+		if (this._useTransform) {
 			cursorEl.style.transform = `translateX(${this.left}px) translateY(${this.top}px)`;
 		} else {
 			cursorEl.style.left = this.left + "px";
@@ -167,7 +167,7 @@ class _CursorMarker implements LayerMarker {
 	 * Debounce the adjuster within 10 miliseconds. Use this to update the
 	 * marker.
 	 */
-	private requestAdjust = debounce((adjuster: typeof this.adjust, cursorEl: HTMLElement) => {
+	private _requestAdjust = debounce((adjuster: typeof this._adjust, cursorEl: HTMLElement) => {
 		adjuster(cursorEl);
 	}, 10, false);
 }
