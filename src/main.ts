@@ -1,5 +1,5 @@
 import { LayerConfig } from "@codemirror/view";
-import { App, MarkdownView, Plugin, WorkspaceLeaf } from "obsidian";
+import { App, Editor, MarkdownView, Plugin } from "obsidian";
 import { hookCursorPlugin, patchCursorPlugin, unpatchCursorPlugin } from "src/patch";
 import { AnimatedCursorSettingTab } from "src/setting-tab";
 
@@ -32,11 +32,12 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 		this.addSettingTab(new AnimatedCursorSettingTab(this.app, this));
 
-		let mdView = this.app.workspace.getActiveViewOfType(MarkdownView);
-		if (mdView)
-			this._tryPatch(mdView.leaf);
-		else
-			this.registerEvent(this.app.workspace.on("active-leaf-change", this._tryPatch));
+		let activeEditor = this.app.workspace.activeEditor?.editor;
+		if (activeEditor) this._tryPatch(activeEditor);
+		else this.registerEvent(this.app.workspace.on(
+			"editor-selection-change",
+			this._tryPatch.bind(this)
+		));
 
 		this.app.workspace.trigger("parse-style-settings");
 
@@ -64,15 +65,13 @@ export default class AnimatedCursorPlugin extends Plugin {
 	}
 
 	/**
-	 * Try to patch the cursor plugin each active leaf was changed. Should
-	 * only be run when the previous attemps failed.
+	 * Try to patch the cursor plugin on corresponding editor. Should only be
+	 * run when the previous attemps failed.
 	 * 
-	 * Used as `"active-leaf-change"` event callback.
+	 * Used as `editor-selection-change` event callback.
 	 */
-	private readonly _tryPatch = (leaf: WorkspaceLeaf | null): void => {
-		if (this._alreadyPatched || !(leaf?.view instanceof MarkdownView)) return;
-
-		let editorView = leaf.view.editor.cm,
+	private _tryPatch(editor: Editor): void {
+		let editorView = editor.cm,
 			cursorPlugin = hookCursorPlugin(editorView);
 
 		if (!cursorPlugin) return;
@@ -82,6 +81,6 @@ export default class AnimatedCursorPlugin extends Plugin {
 		this._alreadyPatched = true;
 
 		// Detach the handler after a successful attemp.
-		this.app.workspace.off("active-leaf-change", this._tryPatch);
+		this.app.workspace.off("editor-selection-change", this._tryPatch);
 	}
 }
