@@ -2,6 +2,7 @@ import { LayerConfig } from "@codemirror/view";
 import { App, Editor, MarkdownView, Plugin } from "obsidian";
 import { hookCursorPlugin, patchCursorPlugin, unpatchCursorPlugin } from "src/patch";
 import { AnimatedCursorSettingTab } from "src/setting-tab";
+import { tableCellFocusObserver } from "src/cm-extensions";
 
 export interface AnimatedCursorSettings {
 	useTransform: boolean;
@@ -38,6 +39,8 @@ export default class AnimatedCursorPlugin extends Plugin {
 			"editor-selection-change",
 			this._tryPatch.bind(this)
 		));
+
+		this.registerEditorExtension(tableCellFocusObserver);
 
 		this.app.workspace.trigger("parse-style-settings");
 
