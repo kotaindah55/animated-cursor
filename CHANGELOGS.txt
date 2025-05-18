@@ -1,0 +1,9 @@
+[1.1.0]
+# Adjustment
+Use more effective and precise method to patch the cursor.
+---
+
+// A changelog must be opened by a version tag wrapped by square brackets,
+// and closed by three consecutive dashes.
+
+// Latest changelog must be located in the beginning of the document.

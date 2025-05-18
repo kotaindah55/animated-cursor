@@ -1,6 +1,6 @@
 {
 	"name": "animated-cursor",
-	"version": "1.0.5",
+	"version": "1.1.0",
 	"description": "Simple yet smooth animated cursor.",
 	"main": "main.js",
 	"scripts": {
@@ -12,7 +12,9 @@
 		"publish-no-package-lock": "npx tsx scripts/publish.mts no-package-lock",
 		"lock": "npx tsx scripts/lock-package.mts"
 	},
-	"keywords": ["obsidian-plugin"],
+	"keywords": [
+		"obsidian-plugin"
+	],
 	"author": "kotaindah55",
 	"license": "MIT",
 	"devDependencies": {
