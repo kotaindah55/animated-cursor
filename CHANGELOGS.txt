@@ -1,6 +1,13 @@
+[1.2.0]
+### Bug fix
+Buggy appearance and animation when dealing with table.
+---
 [1.1.0]
-# Adjustment
+### Adjustment
 Use more effective and precise method to patch the cursor.
+
+### Bug fix
+Cursor won't be patched until opening the Markdown. This resulted in cursor disappear when opening Canvas at the first time.
 ---
 
 // A changelog must be opened by a version tag wrapped by square brackets,
