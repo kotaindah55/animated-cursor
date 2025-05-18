@@ -86,32 +86,32 @@ const _blinkDebouncer = debounce((layerEl: HTMLElement) => {
  * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */
 class _CursorMarker implements LayerMarker {
-	private _className: string;
-	private _useTransform: boolean;
+	public readonly className: string;
+	public readonly useTransform: boolean;
 
 	public readonly left: number;
 	public readonly top: number;
 	public readonly height: number;
 
 	constructor(className: string, left: number, top: number, height: number, useTransform: boolean) {
-		this._className = className;
+		this.className = className;
 		this.left = Math.round(left);
 		this.top = Math.round(top);
 		this.height = Math.round(height);
-		this._useTransform = useTransform;
+		this.useTransform = useTransform;
 	}
 
 	public draw(): HTMLElement {
 		let cursorEl = document.createElement("div");
-		cursorEl.className = this._className;
+		cursorEl.className = this.className;
 		this._adjust(cursorEl);
 		return cursorEl;
 	}
 
 	public update(cursorEl: HTMLElement, prev: _CursorMarker): boolean {
 		if (
-			prev._className != this._className ||
-			prev._useTransform != this._useTransform
+			prev.className != this.className ||
+			prev.useTransform != this.useTransform
 		) return false;
 
 		// Reuse previous debouncer.
@@ -126,8 +126,8 @@ class _CursorMarker implements LayerMarker {
 			this.left == other.left &&
 			this.top == other.top &&
 			this.height == other.height &&
-			this._className == other._className &&
-			this._useTransform == other._useTransform
+			this.className == other.className &&
+			this.useTransform == other.useTransform
 		);
 	}
 
@@ -154,13 +154,15 @@ class _CursorMarker implements LayerMarker {
 	 * call, use `requestAdjust` instead.
 	 */
 	private _adjust = (cursorEl: HTMLElement): void => {
-		if (this._useTransform) {
-			cursorEl.style.transform = `translateX(${this.left}px) translateY(${this.top}px)`;
-		} else {
-			cursorEl.style.left = this.left + "px";
-			cursorEl.style.top = this.top + "px";
-		}
-		cursorEl.style.height = this.height + "px";
+		if (this.useTransform) cursorEl.setCssStyles({
+			transform: `translateX(${this.left}px) translateY(${this.top}px)`
+		});
+		else cursorEl.setCssStyles({
+			left: this.left + "px",
+			top: this.top + "px"
+		});
+
+		cursorEl.setCssStyles({ height: this.height + "px" });
 	}
 
 	/**
