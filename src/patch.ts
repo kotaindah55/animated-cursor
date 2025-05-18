@@ -1,8 +1,80 @@
-import { SelectionRange } from "@codemirror/state";
-import { Direction, EditorView, LayerConfig, LayerMarker, MeasureRequest, PluginInstance, ViewUpdate } from "@codemirror/view";
-import { debounce } from "obsidian";
+import { EditorState, SelectionRange } from "@codemirror/state";
+import {
+	Direction,
+	EditorView,
+	LayerConfig,
+	LayerMarker,
+	MeasureRequest,
+	PluginInstance,
+	ViewUpdate
+} from "@codemirror/view";
+import { debounce, editorInfoField } from "obsidian";
 import { CursorLayerView, CursorPluginInstance } from "src/typings";
 import { AnimatedCursorSettings } from "src/main";
+import { tableCellFocusChange } from "./cm-extensions";
+
+/** Patch for update handler of cursor layer. */
+const layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
+	if (
+		!update.docChanged && !update.selectionSet &&
+		update.transactions.some(tr => tr.annotation(tableCellFocusChange) !== undefined)
+	) return false;
+
+	let hasTableCellFocused = false,
+		tableCellCm = _getTableCellCm(update.startState);
+	if (tableCellCm === update.view) return false;
+
+	if (!update.view.hasFocus && tableCellCm?.hasFocus) {
+		if (!dom.classList.contains("cm-overTableCell"))
+			dom.classList.add("cm-overTableCell");
+		hasTableCellFocused = true;
+	}
+	else if (dom.classList.contains("cm-overTableCell"))
+		dom.classList.remove("cm-overTableCell");
+
+	if (
+		(update.docChanged || update.selectionSet) &&
+		(update.view.hasFocus || hasTableCellFocused)
+	) {
+		if (dom.classList.contains("cm-blinkLayer"))
+			dom.classList.remove("cm-blinkLayer");
+		// Debounce the blink.
+		_blinkDebouncer(dom);
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Patch for marker maker of cursor layer.
+ * 
+ * Taken from, and modified of codemirror/view's `cursorLayer.markers`
+ * version. Only be found in its internal API.
+ */
+const layerMarkersPatch = (settings: AnimatedCursorSettings) => function (view: EditorView) {
+	let { state } = view,
+		tableCellView: undefined | null | EditorView,
+		cursors: _CursorMarker[] = [];
+	
+	if (!view.hasFocus) tableCellView = _getTableCellCm(state);
+	if (tableCellView) ({ state } = tableCellView);
+	if (view === tableCellView) return cursors;
+
+	for (let range of state.selection.ranges) {
+		// Primary cursor will be drawn as DOM, opposite to what Obsidian
+		// implemented, so the primary is able to be animated.
+		let isPrimary = range == state.selection.main,
+			className = "cm-cursor " + (isPrimary ? "cm-cursor-primary" : "cm-cursor-secondary"),
+			cursorMarker = tableCellView
+				? _CursorMarker.forTableCellRange(view, tableCellView, className, range, settings.useTransform)
+				: _CursorMarker.forRange(view, className, range, settings.useTransform);
+
+		if (cursorMarker)
+			cursors.push(cursorMarker);
+	}
+	return cursors;
+}
 
 /** Ensure that it is a layer config. */
 function _isLayerConfig(object: object): object is LayerConfig {
@@ -64,6 +136,15 @@ function _getBaseCoords(view: EditorView): { top: number, left: number } {
 		top: scrollerRect.top - view.scrollDOM.scrollTop * view.scaleY,
 		left: left - view.scrollDOM.scrollLeft * view.scaleX
 	}
+}
+
+function _getTableCellCm(state: EditorState) {
+	let editor = state.field(editorInfoField).editor,
+		activeCm = editor?.activeCM;
+
+	if (!editor?.inTableCell) return;
+
+	return activeCm;
 }
 
 /**
@@ -135,11 +216,39 @@ class _CursorMarker implements LayerMarker {
 	 * Create a cursor marker from selection range. If it's not an empty
 	 * range, the function will use its head position as the marker
 	 * position.
+	 * 
+	 * @param range `SelectionRange` that will be calculated and drawn.
+	 * @param useTransform If true, use CSS property `transform` instead.
 	 */
 	public static forRange(view: EditorView, className: string, range: SelectionRange, useTransform: boolean): _CursorMarker | null {
 		let cursorPos = view.coordsAtPos(range.head, range.assoc || 1);
 		if (!cursorPos) return null;
 		let baseCoords = _getBaseCoords(view);
+		return new _CursorMarker(
+			className,
+			cursorPos.left - baseCoords.left,
+			cursorPos.top - baseCoords.top,
+			cursorPos.bottom - cursorPos.top,
+			useTransform
+		);
+	}
+
+	/**
+	 * Similiar to `forRange()`, except it uses `baseView` as base rect
+	 * coordinates and `tableCellView` to get the `range` coords.
+	 * 
+	 * @remarks _Table cell use case only._
+	 */
+	public static forTableCellRange(
+		baseView: EditorView,
+		tableCellView: EditorView,
+		className: string,
+		range: SelectionRange,
+		useTransform: boolean
+	): _CursorMarker | null {
+		let cursorPos = tableCellView.coordsAtPos(range.head, range.assoc || 1);
+		if (!cursorPos) return null;
+		let baseCoords = _getBaseCoords(baseView);
 		return new _CursorMarker(
 			className,
 			cursorPos.left - baseCoords.left,
@@ -197,37 +306,10 @@ export function patchCursorPlugin(cursorPlugin: CursorLayerView, settings: Anima
 	let originalConfig = Object.assign({}, cursorPlugin.layer);
 
 	// Patch the update handler.
-	cursorPlugin.layer.update = function (update: ViewUpdate, dom: HTMLElement) {
-		if ((update.docChanged || update.selectionSet) && update.view.hasFocus) {
-			if (dom.classList.contains("cm-blinkLayer"))
-				dom.classList.remove("cm-blinkLayer");
-			// Debounce the blink.
-			_blinkDebouncer(dom);
-			return true;
-		}
-		return false;
-	}
+	cursorPlugin.layer.update = layerUpdaterPatch;
 
 	// Patch the marker generator method.
-	//
-	// Taken from, and modified of codemirror/view's `cursorLayer.markers`
-	// version. Only be found in its internal API.
-	cursorPlugin.layer.markers = function (view: EditorView) {
-		let { state } = view,
-			cursors: _CursorMarker[] = [];
-
-		for (let range of state.selection.ranges) {
-			// Primary cursor will be drawn as DOM, opposite to what Obsidian
-			// implemented, so the primary is able to be animated.
-			let isPrimary = range == state.selection.main,
-				className = "cm-cursor " + (isPrimary ? "cm-cursor-primary" : "cm-cursor-secondary"),
-				cursorMarker = _CursorMarker.forRange(view, className, range, settings.useTransform);
-
-			if (cursorMarker)
-				cursors.push(cursorMarker);
-		}
-		return cursors;
-	}
+	cursorPlugin.layer.markers = layerMarkersPatch(settings);
 
 	return originalConfig;
 }
