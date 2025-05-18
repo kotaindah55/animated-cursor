@@ -53,7 +53,8 @@ settings:
 	caret-color: transparent;
 }
 
-.cm-editor.cm-focused>.cm-scroller>.cm-cursorLayer.cm-blinkLayer {
+.cm-editor.cm-focused>.cm-scroller>.cm-cursorLayer.cm-blinkLayer,
+.cm-editor>.cm-scroller>.cm-cursorLayer.cm-overTableCell.cm-blinkLayer {
 	animation-name: cm-cursor-blink !important;
 	animation-duration: calc(var(--cursor-blink-rate) / 2) !important;
 	animation-timing-function: var(--cursor-blink-easing);
@@ -61,7 +62,8 @@ settings:
 	animation-iteration-count: calc(var(--cursor-blink-count) * 2);
 }
 
-.cursor-blink-infinity .cm-editor.cm-focused>.cm-scroller>.cm-cursorLayer.cm-blinkLayer {
+.cursor-blink-infinity .cm-editor.cm-focused>.cm-scroller>.cm-cursorLayer.cm-blinkLayer,
+.cursor-blink-infinity .cm-editor>.cm-scroller>.cm-cursorLayer.cm-overTableCell.cm-blinkLayer {
 	animation-iteration-count: infinite;
 }
 
@@ -71,9 +73,17 @@ settings:
 	animation: none !important;
 }
 
+.table-cell-wrapper .cm-cursorLayer {
+	display: none;
+}
+
 .cm-editor .cm-cursor {
 	transition-property: transform, top, left;
 	transition-duration: var(--cursor-move-speed);
 	transition-timing-function: var(--cursor-move-easing);
 	border-left-width: 2px;
+}
+
+.cm-cursorLayer.cm-overTableCell .cm-cursor {
+	display: block;
 }
