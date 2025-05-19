@@ -16,14 +16,13 @@ export class AnimatedCursorSettingTab extends PluginSettingTab {
 				"If turned on, cursor moves slightly more smoothly, especially when the user moves it continously. " +
 				"There is a downside, the cursor appears blurry."
 			)
-			.addToggle(toggle => {
-				toggle
-					.setValue(this.plugin.settings.useTransform)
-					.onChange(val => {
-						this.plugin.settings.useTransform = val;
-						this.plugin.saveSettings();
-					});
-			});
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.useTransform)
+				.onChange(val => {
+					this.plugin.settings.useTransform = val;
+					this.plugin.saveSettings();
+				})
+			);
 	}
 
 	public hide(): void {
