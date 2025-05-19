@@ -1,4 +1,4 @@
-import { LayerConfig } from "@codemirror/view";
+import { App, Editor, EventRef, MarkdownView, Plugin } from "obsidian";
 import { App, Editor, MarkdownView, Plugin } from "obsidian";
 import { hookCursorPlugin, patchCursorPlugin, unpatchCursorPlugin } from "src/patch";
 import { AnimatedCursorSettingTab } from "src/setting-tab";
@@ -23,10 +23,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 	public settings: AnimatedCursorSettings;
 	public settingTab: AnimatedCursorSettingTab;
 
-	/** Indicate that the cursor plugin is already patched. */
-	private _alreadyPatched: boolean = false;
-	private _targetLayerConfig: LayerConfig;
-	private _originalLayerConfig: LayerConfig;
+	private _tryPatchRef?: EventRef;
 
 	public async onload(): Promise<void> {
 		await this.loadSettings();
@@ -35,7 +32,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 		let activeEditor = this.app.workspace.activeEditor?.editor;
 		if (activeEditor) this._tryPatch(activeEditor);
-		else this.registerEvent(this.app.workspace.on(
+		else this.registerEvent(this._tryPatchRef = this.app.workspace.on(
 			"editor-selection-change",
 			this._tryPatch.bind(this)
 		));
@@ -84,6 +81,6 @@ export default class AnimatedCursorPlugin extends Plugin {
 		this._alreadyPatched = true;
 
 		// Detach the handler after a successful attemp.
-		this.app.workspace.off("editor-selection-change", this._tryPatch);
+		if (this._tryPatchRef) this.app.workspace.offref(this._tryPatchRef);
 	}
 }
