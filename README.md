@@ -70,7 +70,7 @@ Thanks to:
 [style-settings]: https://github.com/mgmeyers/obsidian-style-settings
 [BRAT]: https://github.com/TfTHacker/obsidian42-brat
 
-[latest-version]: https://img.shields.io/github/manifest-json/v/kotaindah55/animated-cursor?label=version
-[current-downloads]: https://img.shields.io/github/downloads/kotaindah55/animated-cursor/total
-[current-stars]: https://img.shields.io/github/stars/kotaindah55/animated-cursor?style=flat
-[open-issues]: https://img.shields.io/github/issues-search?query=repo%3Akotaindah55%2Fanimated-cursor%20is%3Aopen&label=open%20issues&color=red
+[latest-version]: https://img.shields.io/github/manifest-json/v/kotaindah55/animated-cursor?label=version&link=https%3A%2F%2Fgithub.com%2Fkotaindah55%2Fanimated-cursor%2Freleases
+[current-downloads]: https://img.shields.io/github/downloads/kotaindah55/animated-cursor/total?link=https%3A%2F%2Fgithub.com%2Fkotaindah55%2Fanimated-cursor
+[current-stars]: https://img.shields.io/github/stars/kotaindah55/animated-cursor?style=flat&link=https%3A%2F%2Fgithub.com%2Fkotaindah55%2Fanimated-cursor%2Fstargazers
+[open-issues]: https://img.shields.io/github/issues-search?query=repo%3Akotaindah55%2Fanimated-cursor%20is%3Aopen&label=open%20issues&color=red&link=https%3A%2F%2Fgithub.com%2Fkotaindah55%2Fanimated-cursor%2Fissues
