@@ -4,6 +4,10 @@ Give your cursor a simple, yet smooth, move animation. Inspired by Microsoft Off
 
 ![animated-cursor.gif](./docs/assests/animated-cursor.gif)
 
+> [!WARNING]
+> 
+> Read **caveat** section below before installing this plugin!
+
 ## 🚀 Features
 
 - Move and blink animation for the cursor.
