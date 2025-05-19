@@ -7,7 +7,7 @@ Give your cursor a simple, yet smooth, move animation. Inspired by Microsoft Off
 ## 🚀 Features
 
 - Move and blink animation for the cursor.
-- Work on both table and canvas.
+- Work on both hovering page preview and canvas.
 - Support multi-cursor.
 - Adjustable cursor speed and blink duration (via [Style Settings][style-settings] plugin).
 
