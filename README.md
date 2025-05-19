@@ -1,6 +1,6 @@
 # Animated Cursor - Obsdian Plugin
 
-![latest-version] ![current-downloads] ![current-stars]
+![latest-version] ![current-downloads] ![current-stars] ![open-issues]
 
 Give your cursor a simple, yet smooth, move animation. Inspired by Microsoft Office and VSCode smooth cursor.
 
@@ -73,3 +73,4 @@ Thanks to:
 [latest-version]: https://img.shields.io/github/manifest-json/v/kotaindah55/animated-cursor?label=version
 [current-downloads]: https://img.shields.io/github/downloads/kotaindah55/animated-cursor/total
 [current-stars]: https://img.shields.io/github/stars/kotaindah55/animated-cursor?style=flat
+[open-issues]: https://img.shields.io/github/issues-search?query=repo%3Akotaindah55%2Fanimated-cursor%20is%3Aopen&label=open%20issues&color=red
