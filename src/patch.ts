@@ -9,7 +9,7 @@ import {
 	ViewUpdate
 } from "@codemirror/view";
 import { debounce, editorInfoField } from "obsidian";
-import { CursorLayerView, CursorPluginInstance } from "src/typings";
+import { around, Uninstaller } from "monkey-around";
 import { AnimatedCursorSettings } from "src/main";
 import { tableCellFocusChange } from "./cm-extensions";
 
@@ -299,22 +299,15 @@ export function hookCursorPlugin(view: EditorView): CursorLayerView | null | und
  * Patch the cursor plugin and return the original config that can be
  * restored again.
  * 
- * **Should not be executed again after successful hook attemp.**
+ * @returns A patch uninstaller.
+ * 
+ * @remarks **Should not be executed again after successful hook attemp**
  */
-export function patchCursorPlugin(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings): LayerConfig {
-	// Store the original config.
-	let originalConfig = Object.assign({}, cursorPlugin.layer);
-
-	// Patch the update handler.
-	cursorPlugin.layer.update = layerUpdaterPatch;
-
-	// Patch the marker generator method.
-	cursorPlugin.layer.markers = layerMarkersPatch(settings);
-
-	return originalConfig;
-}
-
-/** Restore the cursor layer config to its initial configuration. */
-export function unpatchCursorPlugin(targetConfig: LayerConfig, originalConfig: LayerConfig): void {
-	Object.assign(targetConfig, originalConfig);
+export function patchCursorPlugin(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings): Uninstaller {
+	return around(cursorPlugin.layer, {
+		// Patch the update handler.
+		update: () => _layerUpdaterPatch,
+		// Patch the marker generator method.
+		markers: () => _layerMarkersPatch(settings)
+	});
 }

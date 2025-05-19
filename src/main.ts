@@ -1,8 +1,9 @@
 import { App, Editor, EventRef, MarkdownView, Plugin } from "obsidian";
-import { App, Editor, MarkdownView, Plugin } from "obsidian";
-import { hookCursorPlugin, patchCursorPlugin, unpatchCursorPlugin } from "src/patch";
+import { Uninstaller } from "monkey-around";
+import { patchCursorPlugin } from "src/patch";
 import { AnimatedCursorSettingTab } from "src/setting-tab";
-import { tableCellFocusObserver } from "src/cm-extensions";
+import { tableCellFocusObserver } from "src/observer";
+import { hookCursorPlugin } from "src/hook";
 
 export interface AnimatedCursorSettings {
 	useTransform: boolean;
@@ -23,6 +24,11 @@ export default class AnimatedCursorPlugin extends Plugin {
 	public settings: AnimatedCursorSettings;
 	public settingTab: AnimatedCursorSettingTab;
 
+	/**
+	 * If any, it indicates that the cursor plugin is already patched.
+	 * Run this unistaller when unloading this plugin.
+	 */
+	private _patchUninstaller?: Uninstaller;
 	private _tryPatchRef?: EventRef;
 
 	public async onload(): Promise<void> {
@@ -53,8 +59,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 	}
 
 	public onunload(): void {
-		if (this._alreadyPatched)
-			unpatchCursorPlugin(this._targetLayerConfig, this._originalLayerConfig);
+		this._patchUninstaller?.();
 
 		_iterMarkdownView(this.app, view => {
 			let cursorPlugin = hookCursorPlugin(view.editor.cm);
@@ -66,7 +71,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 	/**
 	 * Try to patch the cursor plugin on corresponding editor. Should only be
-	 * run when the previous attemps failed.
+	 * run at the first time, or when the previous attemps failed.
 	 * 
 	 * Used as `editor-selection-change` event callback.
 	 */
@@ -76,9 +81,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 		if (!cursorPlugin) return;
 
-		this._targetLayerConfig = cursorPlugin.layer;
-		this._originalLayerConfig = patchCursorPlugin(cursorPlugin, this.settings);
-		this._alreadyPatched = true;
+		this._patchUninstaller = patchCursorPlugin(cursorPlugin, this.settings);
 
 		// Detach the handler after a successful attemp.
 		if (this._tryPatchRef) this.app.workspace.offref(this._tryPatchRef);

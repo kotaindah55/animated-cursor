@@ -11,6 +11,7 @@ import {
 	ViewUpdate
 } from "@codemirror/view";
 import "obsidian";
+import "monkey-around";
 
 declare module "@codemirror/view" {
 	type LayerConfig = Parameters<typeof layer>[0];
@@ -69,6 +70,10 @@ declare module "obsidian" {
 	interface Editor {
 		get activeCM(): EditorView | null;
 	}
+}
+
+declare module "monkey-around" {
+	type Uninstaller = () => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
