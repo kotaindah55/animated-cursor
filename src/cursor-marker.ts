@@ -66,7 +66,7 @@ export default class CursorMarker implements LayerMarker {
 
 		// Reuse previous debouncer.
 		this._requestAdjust = prev._requestAdjust ?? this._requestAdjust;
-		// Disable throttling for updating process.
+		// Disable rapid position change for updating process.
 		this._requestAdjust(this._adjust, cursorEl);
 		return true;
 	}
