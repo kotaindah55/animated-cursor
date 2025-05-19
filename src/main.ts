@@ -76,14 +76,28 @@ export default class AnimatedCursorPlugin extends Plugin {
 	 * Used as `editor-selection-change` event callback.
 	 */
 	private _tryPatch(editor: Editor): void {
+		// eslint-disable-next-line no-unused-labels
+		DEVEL: if (this._patchUninstaller) {
+			console.warn('Animated cursor: try to patch the cursor while it has already been patched');
+		} else {
+			console.log('Animated Cursor: try to patch the cursor');
+		}
+
 		let editorView = editor.cm,
 			cursorPlugin = hookCursorPlugin(editorView);
 
-		if (!cursorPlugin) return;
+		if (!cursorPlugin) {
+			// eslint-disable-next-line no-unused-labels
+			DEVEL: console.log('Animated Cursor: patch failed');
+			return;
+		}
 
 		this._patchUninstaller = patchCursorPlugin(cursorPlugin, this.settings);
 
 		// Detach the handler after a successful attemp.
 		if (this._tryPatchRef) this.app.workspace.offref(this._tryPatchRef);
+
+		// eslint-disable-next-line no-unused-labels
+		DEVEL: console.log('Animated Cursor: patch successful');
 	}
 }

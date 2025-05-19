@@ -37,9 +37,9 @@ const context = await esbuild.context({
 	logLevel: "info",
 	treeShaking: true,
 	sourcemap: prod ? false : "inline",
-	outfile: prod ? "main.js" : "dist/main.js",
+	outfile: "main.js",
 	minify: prod ? true : false,
-	dropLabels: prod ? ["devel"] : undefined,
+	dropLabels: prod ? ["DEVEL"] : undefined,
 	tsconfig: "tsconfig.json"
 });
 
