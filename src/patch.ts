@@ -19,19 +19,19 @@ const _layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
 	if (tableCellCm === update.view) return false;
 
 	if (!update.view.hasFocus && tableCellCm?.hasFocus) {
-		if (!dom.classList.contains("cm-overTableCell"))
-			dom.classList.add("cm-overTableCell");
+		if (!dom.hasClass("cm-overTableCell"))
+			dom.addClass("cm-overTableCell");
 		hasTableCellFocused = true;
 	}
-	else if (dom.classList.contains("cm-overTableCell"))
-		dom.classList.remove("cm-overTableCell");
+	else if (dom.hasClass("cm-overTableCell"))
+		dom.removeClass("cm-overTableCell");
 
 	if (
 		(update.docChanged || update.selectionSet) &&
 		(update.view.hasFocus || hasTableCellFocused)
 	) {
-		if (dom.classList.contains("cm-blinkLayer"))
-			dom.classList.remove("cm-blinkLayer");
+		if (dom.hasClass("cm-blinkLayer"))
+			dom.removeClass("cm-blinkLayer");
 		// Debounce the blink.
 		_blinkDebouncer(dom);
 		return true;
