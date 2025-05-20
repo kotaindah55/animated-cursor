@@ -63,7 +63,7 @@ Feel free to let me know if you find any bugs...
 
 ## ©️ Attribution
 
-This plugin includes some of the source codes developed by [Marijn Haverbake][marijn] and the others at [CodeMirror][codemirror], with some modifications. Licensed with MIT.
+This plugin includes some of the source codes developed by [Marijnh Haverbeke][marijn] and the others at [CodeMirror][codemirror], with some modifications. Licensed with MIT.
 
 ## 🙏 Acknowledgment
 
