@@ -68,7 +68,7 @@ declare module "@codemirror/view" {
 
 declare module "obsidian" {
 	interface Editor {
-		get activeCM(): EditorView | null;
+		get activeCM(): EditorView;
 	}
 }
 
@@ -84,4 +84,3 @@ export interface CursorLayerView extends LayerView {
 }
 
 export type CursorPluginInstance = PluginInstance<CursorLayerView>;
-

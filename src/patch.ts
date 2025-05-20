@@ -43,12 +43,17 @@ const _layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
 /**
  * Patch for marker maker of cursor layer.
  * 
- * Taken from, and modified of codemirror/view's `cursorLayer.markers`
+ * Taken from, and modified of CodeMirror's `cursorLayer.markers`
  * version. Only be found in its internal API.
+ * 
+ * MIT licensed, copyright (c) by Marijn Haverbeke and others at
+ * CodeMirror.
+ * 
+ * @see https://github.com/codemirror/view/blob/main/src/draw-selection.ts
  */
 const _layerMarkersPatch = (settings: AnimatedCursorSettings) => function (view: EditorView) {
 	let { state } = view,
-		tableCellView: undefined | null | EditorView,
+		tableCellView: EditorView | undefined,
 		cursors: CursorMarker[] = [];
 	
 	if (!view.hasFocus) tableCellView = _getTableCellCm(state);
@@ -84,13 +89,13 @@ const _blinkDebouncer = debounce((layerEl: HTMLElement) => {
  * 
  * @param state Associated `EditorState`.
  */
-function _getTableCellCm(state: EditorState) {
+function _getTableCellCm(state: EditorState): EditorView | undefined {
 	let editor = state.field(editorInfoField).editor,
-		activeCm = editor?.activeCM;
+		{ activeCM } = editor ?? {};
 
 	if (!editor?.inTableCell) return;
 
-	return activeCm;
+	return activeCM;
 }
 
 /**
