@@ -61,12 +61,18 @@ Because this plugin uses DOM to draw the cursor, it could -_probably_- **cost ex
 
 Feel free to let me know if you find any bugs...
 
+## ©️ Attribution
+
+This plugin includes some of the source codes developed by [Marijn Haverbake][marijn] and the others at [CodeMirror][codemirror], with some modifications. Licensed with MIT.
+
 ## 🙏 Acknowledgment
 
 Thanks to:
 - [VSCode](https://github.com/microsoft/vscode) for the smooth cursor concept.
 - [CodeMirror](https://github.com/codemirror), [Marijnh](https://github.com/marijnh), and its community.
 
+[codemirror]: https://github.com/codemirror
+[marijn]: https://github.com/marijnh
 [style-settings]: https://github.com/mgmeyers/obsidian-style-settings
 [BRAT]: https://github.com/TfTHacker/obsidian42-brat
 
