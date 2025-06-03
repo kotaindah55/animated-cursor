@@ -135,15 +135,18 @@ export default class CursorMarker implements LayerMarker {
 	 * call, use `requestAdjust` instead.
 	 */
 	private _adjust = (cursorEl: HTMLElement): void => {
-		if (this.useTransform) cursorEl.setCssStyles({
-			transform: `translateX(${this.left}px) translateY(${this.top}px)`
-		});
-		else cursorEl.setCssStyles({
-			left: this.left + "px",
-			top: this.top + "px"
-		});
-
-		cursorEl.setCssStyles({ height: this.height + "px" });
+		// Hack to smooth the movement and remove jittering
+		requestAnimationFrame(() => {
+			if (this.useTransform) cursorEl.setCssStyles({
+				transform: `translateX(${this.left}px) translateY(${this.top}px)`
+			});
+			else cursorEl.setCssStyles({
+				left: this.left + "px",
+				top: this.top + "px"
+			});
+	
+			cursorEl.setCssStyles({ height: this.height + "px" });
+		})
 	}
 
 	/**

@@ -55,8 +55,8 @@ Because this plugin uses DOM to draw the cursor, it could -_probably_- **cost ex
 
 ## 🐞 Known Bugs
 
-- Flicker/jitter effect occurs when the cursor is continously moved by holding the arrow keys.
 - Buggy multi-cursors on the table.
+- ~~Flicker/jitter effect occurs when the cursor is continously moved by holding the arrow keys.~~
 - ~~Weird behavior when move the cursor outside the table.~~
 
 Feel free to let me know if you find any bugs...
