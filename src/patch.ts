@@ -7,25 +7,29 @@ import { AnimatedCursorSettings } from "src/main";
 import { tableCellFocusChange } from "src/observer";
 import CursorMarker from "src/cursor-marker";
 
-/** Patch for update handler of cursor layer. */
+/**
+ * Patch for update handler of cursor layer.
+ */
 const _layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
 	if (
 		!update.docChanged && !update.selectionSet &&
-		update.transactions.some(tr => tr.annotation(tableCellFocusChange) !== undefined)
+		update.transactions.some(tr => !!tr.annotation(tableCellFocusChange))
 	) return false;
 
 	let hasTableCellFocused = false,
-		tableCellCm = _getTableCellCm(update.startState);
+		tableCellCm = _getTableCellCm(update.state);
 	if (tableCellCm === update.view) return false;
 
+	// Toggle "cm-overTableCell" class, depends on editor's focus state.
 	if (!update.view.hasFocus && tableCellCm?.hasFocus) {
 		if (!dom.hasClass("cm-overTableCell"))
 			dom.addClass("cm-overTableCell");
 		hasTableCellFocused = true;
-	}
-	else if (dom.hasClass("cm-overTableCell"))
+	} else if (dom.hasClass("cm-overTableCell")) {
 		dom.removeClass("cm-overTableCell");
+	}
 
+	// Reset the blink layer.
 	if (
 		(update.docChanged || update.selectionSet) &&
 		(update.view.hasFocus || hasTableCellFocused)
@@ -104,7 +108,7 @@ function _getTableCellCm(state: EditorState): EditorView | undefined {
  * 
  * @returns A patch uninstaller.
  * 
- * @remarks **Should not be executed again after successful hook attemp**
+ * @remark **Should not be executed again after successful hook attemp**
  */
 export function patchCursorPlugin(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings): Uninstaller {
 	return around(cursorPlugin.layer, {

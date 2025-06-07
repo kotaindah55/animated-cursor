@@ -84,6 +84,7 @@ settings:
 	border-left-width: 2px;
 }
 
-.cm-cursorLayer.cm-overTableCell .cm-cursor {
+.cm-cursorLayer.cm-overTableCell .cm-cursor,
+.cm-hasTablePointed .cm-cursorLayer .cm-cursor {
 	display: block;
 }

@@ -2,7 +2,7 @@ import { App, Editor, EventRef, MarkdownView, Plugin } from "obsidian";
 import { Uninstaller } from "monkey-around";
 import { patchCursorPlugin } from "src/patch";
 import { AnimatedCursorSettingTab } from "src/setting-tab";
-import { tableCellFocusObserver } from "src/observer";
+import { tableCellObserver } from "src/observer";
 import { hookCursorPlugin } from "src/hook";
 
 export interface AnimatedCursorSettings {
@@ -38,12 +38,12 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 		let activeEditor = this.app.workspace.activeEditor?.editor;
 		if (activeEditor) this._tryPatch(activeEditor);
-		else this.registerEvent(this._tryPatchRef = this.app.workspace.on(
+		else this._tryPatchRef = this.app.workspace.on(
 			"editor-selection-change",
 			this._tryPatch.bind(this)
-		));
+		);
 
-		this.registerEditorExtension(tableCellFocusObserver);
+		this.registerEditorExtension(tableCellObserver);
 
 		this.app.workspace.trigger("parse-style-settings");
 
@@ -60,6 +60,9 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 	public onunload(): void {
 		this._patchUninstaller?.();
+
+		if (this._tryPatchRef)
+			this.app.workspace.offref(this._tryPatchRef);
 
 		_iterMarkdownView(this.app, view => {
 			let cursorPlugin = hookCursorPlugin(view.editor.cm);
@@ -78,9 +81,9 @@ export default class AnimatedCursorPlugin extends Plugin {
 	private _tryPatch(editor: Editor): void {
 		// eslint-disable-next-line no-unused-labels
 		DEVEL: if (this._patchUninstaller) {
-			console.warn('Animated cursor: try to patch the cursor while it has already been patched');
+			console.warn("Animated cursor: try to patch the cursor while it has already been patched");
 		} else {
-			console.log('Animated Cursor: try to patch the cursor');
+			console.log("Animated Cursor: try to patch the cursor");
 		}
 
 		let editorView = editor.cm,
@@ -88,16 +91,19 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 		if (!cursorPlugin) {
 			// eslint-disable-next-line no-unused-labels
-			DEVEL: console.log('Animated Cursor: patch failed');
+			DEVEL: console.log("Animated Cursor: patch failed");
 			return;
 		}
 
 		this._patchUninstaller = patchCursorPlugin(cursorPlugin, this.settings);
 
 		// Detach the handler after a successful attemp.
-		if (this._tryPatchRef) this.app.workspace.offref(this._tryPatchRef);
+		if (this._tryPatchRef) {
+			this.app.workspace.offref(this._tryPatchRef);
+			delete this._tryPatchRef;
+		}
 
 		// eslint-disable-next-line no-unused-labels
-		DEVEL: console.log('Animated Cursor: patch successful');
+		DEVEL: console.log("Animated Cursor: patch successful");
 	}
 }
