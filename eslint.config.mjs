@@ -35,21 +35,14 @@ export default [{
 		globals: {
 			...globals.node,
 		},
-
 		parser: tsParser,
 		ecmaVersion: 6,
 		sourceType: "module",
 	},
 
 	rules: {
-		"no-unused-vars": "off",
-		"@typescript-eslint/no-unused-vars": ["error", {
-			args: "none",
-		}],
-		"@typescript-eslint/ban-ts-comment": "off",
 		"no-prototype-builtins": "off",
-		"@typescript-eslint/no-empty-function": "off",
 		"prefer-const": "off",
-		"no-cond-assign": "off",
+		"@typescript-eslint/ban-ts-comment": "off"
 	},
 }];
