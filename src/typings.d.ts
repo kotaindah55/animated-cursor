@@ -68,11 +68,33 @@ declare module "@codemirror/view" {
 
 declare module "obsidian" {
 	interface Editor {
+		/**
+		 * Main CodeMirror's `EditorView` instance of the editor.
+		 */
+		cm: EditorView;
+		/**
+		 * Currently active `EditorView` in the editor, either belongs to the
+		 * main editor directly or to the table cell.
+		 */
 		get activeCM(): EditorView;
+		/**
+		 * Whether the main editor has a nested `EditorView` inside a table cell.
+		 */
+		get inTableCell(): boolean;
+	}
+
+	interface Workspace {
+		/**
+		 * Triggered when any available editor has its selection changed.
+		 */
+		on(name: "editor-selection-change", callback: (editor: Editor, info: MarkdownFileInfo) => unknown, ctx?: unknown): EventRef;
 	}
 }
 
 declare module "monkey-around" {
+	/**
+	 * Call this to uninstall the patch.
+	 */
 	type Uninstaller = () => void;
 }
 
