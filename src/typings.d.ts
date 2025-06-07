@@ -98,11 +98,8 @@ declare module "monkey-around" {
 	type Uninstaller = () => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CursorLayerConfig extends LayerConfig {}
-
 export interface CursorLayerView extends LayerView {
-	readonly layer: CursorLayerConfig;
+	readonly layer: LayerConfig;
 }
 
 export type CursorPluginInstance = PluginInstance<CursorLayerView>;
