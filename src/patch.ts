@@ -10,14 +10,14 @@ import CursorMarker from "src/cursor-marker";
 /**
  * Patch for update handler of cursor layer.
  */
-const _layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
+const layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
 	if (
 		!update.docChanged && !update.selectionSet &&
 		update.transactions.some(tr => !!tr.annotation(tableCellFocusChange))
 	) return false;
 
 	let hasTableCellFocused = false,
-		tableCellCm = _getTableCellCm(update.state);
+		tableCellCm = getTableCellCm(update.state);
 	if (tableCellCm === update.view) return false;
 
 	// Toggle "cm-overTableCell" class, depends on editor's focus state.
@@ -37,7 +37,7 @@ const _layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
 		if (dom.hasClass("cm-blinkLayer"))
 			dom.removeClass("cm-blinkLayer");
 		// Debounce the blink.
-		_blinkDebouncer(dom);
+		blinkDebouncer(dom);
 		return true;
 	}
 
@@ -55,12 +55,12 @@ const _layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
  * 
  * @see https://github.com/codemirror/view/blob/main/src/draw-selection.ts
  */
-const _layerMarkersPatch = (settings: AnimatedCursorSettings) => function (view: EditorView) {
+const layerMarkersPatch = (settings: AnimatedCursorSettings) => function (view: EditorView) {
 	let { state } = view,
 		tableCellView: EditorView | undefined,
 		cursors: CursorMarker[] = [];
 	
-	if (!view.hasFocus) tableCellView = _getTableCellCm(state);
+	if (!view.hasFocus) tableCellView = getTableCellCm(state);
 	if (tableCellView) ({ state } = tableCellView);
 	if (view === tableCellView) return cursors;
 
@@ -84,7 +84,7 @@ const _layerMarkersPatch = (settings: AnimatedCursorSettings) => function (view:
  * blink-animated, instead of changing its animation keyframe each layer
  * update.
  */
-const _blinkDebouncer = debounce((layerEl: HTMLElement) => {
+const blinkDebouncer = debounce((layerEl: HTMLElement) => {
 	layerEl.addClass("cm-blinkLayer");
 }, 350, true);
 
@@ -93,7 +93,7 @@ const _blinkDebouncer = debounce((layerEl: HTMLElement) => {
  * 
  * @param state Associated `EditorState`.
  */
-function _getTableCellCm(state: EditorState): EditorView | undefined {
+function getTableCellCm(state: EditorState): EditorView | undefined {
 	let editor = state.field(editorInfoField).editor,
 		{ activeCM } = editor ?? {};
 
@@ -113,8 +113,8 @@ function _getTableCellCm(state: EditorState): EditorView | undefined {
 export function patchCursorPlugin(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings): Uninstaller {
 	return around(cursorPlugin.layer, {
 		// Patch the update handler.
-		update: () => _layerUpdaterPatch,
+		update: () => layerUpdaterPatch,
 		// Patch the marker generator method.
-		markers: () => _layerMarkersPatch(settings)
+		markers: () => layerMarkersPatch(settings)
 	});
 }

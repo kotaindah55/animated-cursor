@@ -2,7 +2,7 @@ import { EditorView, LayerConfig, MeasureRequest, PluginInstance } from "@codemi
 import { CursorLayerView, CursorPluginInstance } from "src/typings";
 
 /** Ensure that it is a layer config. */
-function _isLayerConfig(object: object): object is LayerConfig {
+function isLayerConfig(object: object): object is LayerConfig {
 	return (
 		"above" in object && typeof object.above == "boolean" &&
 		(!("class" in object) || typeof object.class == "string") &&
@@ -15,7 +15,7 @@ function _isLayerConfig(object: object): object is LayerConfig {
 }
 
 /** Ensure that it is a `MeasureRequest` instance. */
-function _isMeasureReq(object: object): object is MeasureRequest<unknown> {
+function isMeasureReq(object: object): object is MeasureRequest<unknown> {
 	return (
 		"read" in object && typeof object.read == "function" &&
 		(!("write" in object) || typeof object.write == "function")
@@ -23,13 +23,13 @@ function _isMeasureReq(object: object): object is MeasureRequest<unknown> {
 }
 
 /** Ensure that the plugin value is a `CursorLayerView` instance. */
-function _isCursorPlugin(instance: PluginInstance): instance is CursorPluginInstance {
+function isCursorPlugin(instance: PluginInstance): instance is CursorPluginInstance {
 	let pluginValue = instance.value;
 	return (
 		!!pluginValue &&
 		"view" in pluginValue && pluginValue.view instanceof EditorView &&
-		"layer" in pluginValue && !!pluginValue.layer && _isLayerConfig(pluginValue.layer) &&
-		"measureReq" in pluginValue && !!pluginValue.measureReq && _isMeasureReq(pluginValue.measureReq) &&
+		"layer" in pluginValue && !!pluginValue.layer && isLayerConfig(pluginValue.layer) &&
+		"measureReq" in pluginValue && !!pluginValue.measureReq && isMeasureReq(pluginValue.measureReq) &&
 		"drawn" in pluginValue && pluginValue.drawn instanceof Array &&
 		"dom" in pluginValue && pluginValue.dom instanceof HTMLElement &&
 		"scaleX" in pluginValue && typeof pluginValue.scaleX == "number" &&
@@ -49,7 +49,7 @@ export function hookCursorPlugin(view: EditorView): CursorLayerView | null | und
 	let pluginInstances = view.plugins as PluginInstance[];
 	return pluginInstances.find(
 		(instance): instance is CursorPluginInstance => {
-			return !!instance.value && _isCursorPlugin(instance);
+			return !!instance.value && isCursorPlugin(instance);
 		}
 	)?.value;
 }

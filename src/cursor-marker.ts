@@ -11,7 +11,7 @@ import { debounce } from "obsidian";
  * 
  * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */
-function _getBaseCoords(view: EditorView): { top: number, left: number } {
+function getBaseCoords(view: EditorView): { top: number, left: number } {
 	let scrollerRect = view.scrollDOM.getBoundingClientRect(),
 		left = view.textDirection == Direction.LTR
 			? scrollerRect.left
@@ -54,7 +54,7 @@ export default class CursorMarker implements LayerMarker {
 	public draw(): HTMLElement {
 		let cursorEl = document.createElement("div");
 		cursorEl.className = this.className;
-		this._adjust(cursorEl);
+		this.adjust(cursorEl);
 		return cursorEl;
 	}
 
@@ -65,9 +65,9 @@ export default class CursorMarker implements LayerMarker {
 		) return false;
 
 		// Reuse previous debouncer.
-		this._requestAdjust = prev._requestAdjust ?? this._requestAdjust;
+		this.requestAdjust = prev.requestAdjust ?? this.requestAdjust;
 		// Disable rapid position change for updating process.
-		this._requestAdjust(this._adjust, cursorEl);
+		this.requestAdjust(this.adjust, cursorEl);
 		return true;
 	}
 
@@ -92,7 +92,7 @@ export default class CursorMarker implements LayerMarker {
 	public static forRange(view: EditorView, className: string, range: SelectionRange, useTransform: boolean): CursorMarker | null {
 		let cursorPos = view.coordsAtPos(range.head, range.assoc || 1);
 		if (!cursorPos) return null;
-		let baseCoords = _getBaseCoords(view);
+		let baseCoords = getBaseCoords(view);
 		return new CursorMarker(
 			className,
 			cursorPos.left - baseCoords.left,
@@ -120,7 +120,7 @@ export default class CursorMarker implements LayerMarker {
 	): CursorMarker | null {
 		let cursorPos = tableCellView.coordsAtPos(range.head, range.assoc || 1);
 		if (!cursorPos) return null;
-		let baseCoords = _getBaseCoords(baseView);
+		let baseCoords = getBaseCoords(baseView);
 		return new CursorMarker(
 			className,
 			cursorPos.left - baseCoords.left,
@@ -134,7 +134,7 @@ export default class CursorMarker implements LayerMarker {
 	 * Adjust the marker position. Should not be run immediately in `update`
 	 * call, use `requestAdjust` instead.
 	 */
-	private _adjust = (cursorEl: HTMLElement): void => {
+	private adjust = (cursorEl: HTMLElement): void => {
 		// Hack to smooth the movement and remove jittering
 		requestAnimationFrame(() => {
 			if (this.useTransform) cursorEl.setCssStyles({
@@ -153,7 +153,7 @@ export default class CursorMarker implements LayerMarker {
 	 * Debounce the adjuster within 10 miliseconds. Use this to update the
 	 * marker.
 	 */
-	private _requestAdjust = debounce((adjuster: typeof this._adjust, cursorEl: HTMLElement) => {
+	private requestAdjust = debounce((adjuster: typeof this.adjust, cursorEl: HTMLElement) => {
 		adjuster(cursorEl);
 	}, 10, false);
 }

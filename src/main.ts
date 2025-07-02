@@ -13,7 +13,7 @@ export const DEFAULT_SETTINGS: AnimatedCursorSettings = {
 	useTransform: true
 }
 
-function _iterMarkdownView(app: App, callback: (view: MarkdownView) => unknown): void {
+function iterMarkdownView(app: App, callback: (view: MarkdownView) => unknown): void {
 	app.workspace.getLeavesOfType("markdown").forEach(leaf => {
 		if (leaf.view instanceof MarkdownView)
 			callback(leaf.view);
@@ -28,8 +28,8 @@ export default class AnimatedCursorPlugin extends Plugin {
 	 * If any, it indicates that the cursor plugin is already patched.
 	 * Run this unistaller when unloading this plugin.
 	 */
-	private _patchUninstaller?: Uninstaller;
-	private _tryPatchRef?: EventRef;
+	private patchUninstaller?: Uninstaller;
+	private tryPatchRef?: EventRef;
 
 	public async onload(): Promise<void> {
 		await this.loadSettings();
@@ -37,10 +37,10 @@ export default class AnimatedCursorPlugin extends Plugin {
 		this.addSettingTab(new AnimatedCursorSettingTab(this.app, this));
 
 		let activeEditor = this.app.workspace.activeEditor?.editor;
-		if (activeEditor) this._tryPatch(activeEditor);
-		else this._tryPatchRef = this.app.workspace.on(
+		if (activeEditor) this.tryPatch(activeEditor);
+		else this.tryPatchRef = this.app.workspace.on(
 			"editor-selection-change",
-			this._tryPatch.bind(this)
+			this.tryPatch.bind(this)
 		);
 
 		this.registerEditorExtension(tableCellObserver);
@@ -59,12 +59,12 @@ export default class AnimatedCursorPlugin extends Plugin {
 	}
 
 	public onunload(): void {
-		this._patchUninstaller?.();
+		this.patchUninstaller?.();
 
-		if (this._tryPatchRef)
-			this.app.workspace.offref(this._tryPatchRef);
+		if (this.tryPatchRef)
+			this.app.workspace.offref(this.tryPatchRef);
 
-		_iterMarkdownView(this.app, view => {
+		iterMarkdownView(this.app, view => {
 			let cursorPlugin = hookCursorPlugin(view.editor.cm);
 			cursorPlugin?.dom.removeClass("cm-blinkLayer");
 		});
@@ -78,9 +78,9 @@ export default class AnimatedCursorPlugin extends Plugin {
 	 * 
 	 * Used as `editor-selection-change` event callback.
 	 */
-	private _tryPatch(editor: Editor): void {
+	private tryPatch(editor: Editor): void {
 		// eslint-disable-next-line no-unused-labels
-		DEVEL: if (this._patchUninstaller) {
+		DEVEL: if (this.patchUninstaller) {
 			console.warn("Animated cursor: try to patch the cursor while it has already been patched");
 		} else {
 			console.log("Animated Cursor: try to patch the cursor");
@@ -95,12 +95,12 @@ export default class AnimatedCursorPlugin extends Plugin {
 			return;
 		}
 
-		this._patchUninstaller = patchCursorPlugin(cursorPlugin, this.settings);
+		this.patchUninstaller = patchCursorPlugin(cursorPlugin, this.settings);
 
 		// Detach the handler after a successful attemp.
-		if (this._tryPatchRef) {
-			this.app.workspace.offref(this._tryPatchRef);
-			delete this._tryPatchRef;
+		if (this.tryPatchRef) {
+			this.app.workspace.offref(this.tryPatchRef);
+			delete this.tryPatchRef;
 		}
 
 		// eslint-disable-next-line no-unused-labels

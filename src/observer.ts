@@ -7,7 +7,7 @@ const LEFT_MOUSE_BTN = 0;
 /**
  * Pointing down handler, used for `tableCellObserver`.
  */
-const _onEditorPointerdown = (view: EditorView) => function (evt: PointerEvent): void {
+const onEditorPointerdown = (view: EditorView) => function (evt: PointerEvent): void {
 	if (evt.button !== LEFT_MOUSE_BTN) return;
 
 	// Scan for pointed table.
@@ -56,7 +56,7 @@ export const tableCellObserver = ViewPlugin.define(view => {
 
 	// Exclusive to main EditorView.
 	if (editor?.cm === view) {
-		pointerHandler = _onEditorPointerdown(view);
+		pointerHandler = onEditorPointerdown(view);
 		view.dom.addEventListener("pointerdown", pointerHandler, {
 			capture: true
 		});
