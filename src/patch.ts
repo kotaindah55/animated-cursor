@@ -1,7 +1,7 @@
 import { EditorState } from "@codemirror/state";
 import { EditorView, ViewUpdate } from "@codemirror/view";
 import { debounce, editorInfoField } from "obsidian";
-import { around, Uninstaller } from "monkey-around";
+import { around } from "monkey-around";
 import { CursorLayerView } from "src/typings";
 import { AnimatedCursorSettings } from "src/main";
 import { tableCellFocusChange } from "src/observer";
@@ -110,7 +110,7 @@ function getTableCellCm(state: EditorState): EditorView | undefined {
  * 
  * @remark **Should not be executed again after successful hook attemp**
  */
-export function patchCursorPlugin(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings): Uninstaller {
+export function patchCursorPlugin(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings) {
 	return around(cursorPlugin.layer, {
 		// Patch the update handler.
 		update: () => layerUpdaterPatch,

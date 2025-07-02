@@ -52,7 +52,7 @@ export default class CursorMarker implements LayerMarker {
 	}
 
 	public draw(): HTMLElement {
-		let cursorEl = document.createElement("div");
+		let cursorEl = createDiv();
 		cursorEl.className = this.className;
 		this.adjust(cursorEl);
 		return cursorEl;

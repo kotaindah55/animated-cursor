@@ -1,5 +1,4 @@
 import { App, Editor, EventRef, MarkdownView, Plugin } from "obsidian";
-import { Uninstaller } from "monkey-around";
 import { patchCursorPlugin } from "src/patch";
 import { AnimatedCursorSettingTab } from "src/setting-tab";
 import { tableCellObserver } from "src/observer";
@@ -26,14 +25,14 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 	/**
 	 * If any, it indicates that the cursor plugin is already patched.
-	 * Run this unistaller when unloading this plugin.
 	 */
-	private patchUninstaller?: Uninstaller;
+	private alreadyPatched: boolean;
 	private tryPatchRef?: EventRef;
 
 	public async onload(): Promise<void> {
 		await this.loadSettings();
 
+		this.alreadyPatched = false;
 		this.addSettingTab(new AnimatedCursorSettingTab(this.app, this));
 
 		let activeEditor = this.app.workspace.activeEditor?.editor;
@@ -59,8 +58,6 @@ export default class AnimatedCursorPlugin extends Plugin {
 	}
 
 	public onunload(): void {
-		this.patchUninstaller?.();
-
 		if (this.tryPatchRef)
 			this.app.workspace.offref(this.tryPatchRef);
 
@@ -79,12 +76,14 @@ export default class AnimatedCursorPlugin extends Plugin {
 	 * Used as `editor-selection-change` event callback.
 	 */
 	private tryPatch(editor: Editor): void {
-		// eslint-disable-next-line no-unused-labels
-		DEVEL: if (this.patchUninstaller) {
-			console.warn("Animated cursor: try to patch the cursor while it has already been patched");
-		} else {
-			console.log("Animated Cursor: try to patch the cursor");
+		if (this.alreadyPatched) {
+			// eslint-disable-next-line no-unused-labels
+			DEVEL: console.warn("Animated cursor: try to patch the cursor while it has already been patched");
+			return;
 		}
+
+		// eslint-disable-next-line no-unused-labels
+		DEVEL: console.log("Animated Cursor: try to patch the cursor");
 
 		let editorView = editor.cm,
 			cursorPlugin = hookCursorPlugin(editorView);
@@ -95,7 +94,9 @@ export default class AnimatedCursorPlugin extends Plugin {
 			return;
 		}
 
-		this.patchUninstaller = patchCursorPlugin(cursorPlugin, this.settings);
+		// Will be uninstalled automatically on plugin unload.
+		this.register(patchCursorPlugin(cursorPlugin, this.settings));
+		this.alreadyPatched = true;
 
 		// Detach the handler after a successful attemp.
 		if (this.tryPatchRef) {

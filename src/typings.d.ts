@@ -91,13 +91,6 @@ declare module "obsidian" {
 	}
 }
 
-declare module "monkey-around" {
-	/**
-	 * Call this to uninstall the patch.
-	 */
-	type Uninstaller = () => void;
-}
-
 export interface CursorLayerView extends LayerView {
 	readonly layer: LayerConfig;
 }
