@@ -1,3 +1,8 @@
+[1.3.3]
+### Improvement
+- Improve codebase and remove some redundants.
+- Backward compatibility support up to ECMAScript 2018.
+---
 [1.3.2]
 ### Bug fix
 Cursor disappears when pointering a table down.
