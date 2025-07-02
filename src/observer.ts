@@ -43,7 +43,7 @@ export const tableCellFocusChange = Annotation.define<boolean>();
 export const tableCellObserver = ViewPlugin.define(view => {
 	let { editor } = view.state.field(editorInfoField),
 		pluginValue: PluginValue = {},
-		pointerHandler: ((evt: PointerEvent) => void) | undefined;
+		pointerHandler: (evt: PointerEvent) => void;
 
 	// Exclusive to table cell EditorView.
 	if (editor?.inTableCell && editor.activeCM === view) {
@@ -61,7 +61,7 @@ export const tableCellObserver = ViewPlugin.define(view => {
 			capture: true
 		});
 		pluginValue.destroy = () => view.dom.removeEventListener(
-			'pointerdown', pointerHandler!
+			'pointerdown', pointerHandler
 		);
 	}
 

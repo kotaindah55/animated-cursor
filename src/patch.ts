@@ -22,10 +22,9 @@ const layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
 
 	// Toggle "cm-overTableCell" class, depends on editor's focus state.
 	if (!update.view.hasFocus && tableCellCm?.hasFocus) {
-		if (!dom.hasClass("cm-overTableCell"))
-			dom.addClass("cm-overTableCell");
+		dom.addClass("cm-overTableCell");
 		hasTableCellFocused = true;
-	} else if (dom.hasClass("cm-overTableCell")) {
+	} else {
 		dom.removeClass("cm-overTableCell");
 	}
 
@@ -34,8 +33,7 @@ const layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
 		(update.docChanged || update.selectionSet) &&
 		(update.view.hasFocus || hasTableCellFocused)
 	) {
-		if (dom.hasClass("cm-blinkLayer"))
-			dom.removeClass("cm-blinkLayer");
+		dom.removeClass("cm-blinkLayer");
 		// Debounce the blink.
 		blinkDebouncer(dom);
 		return true;
