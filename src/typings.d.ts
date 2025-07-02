@@ -19,8 +19,8 @@ declare module "@codemirror/view" {
 	type LayerPluginInstance = PluginInstance<LayerView>;
 
 	/**
-	 * MIT licensed, copyright (c) by Marijn Haverbeke and others at
-	 * CodeMirror.
+	 * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
+	 * and others. Licensed under MIT.
 	 * 
 	 * @see https://github.com/codemirror/view/blob/main/src/layer.ts
 	 */
@@ -39,8 +39,8 @@ declare module "@codemirror/view" {
 	}
 
 	/**
-	 * MIT licensed, copyright (c) by Marijn Haverbeke and others at
-	 * CodeMirror.
+	 * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
+	 * and others. Licensed under MIT.
 	 * 
 	 * @see https://github.com/codemirror/view/blob/main/src/extension.ts
 	 */
@@ -51,8 +51,8 @@ declare module "@codemirror/view" {
 	}
 
 	/**
-	 * MIT licensed, copyright (c) by Marijn Haverbeke and others at
-	 * CodeMirror.
+	 * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
+	 * and others. Licensed under MIT.
 	 * 
 	 * @see https://github.com/codemirror/view/blob/main/src/extension.ts
 	 */

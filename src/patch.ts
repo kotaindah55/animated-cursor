@@ -50,8 +50,8 @@ const layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
  * Taken from, and modified of CodeMirror's `cursorLayer.markers`
  * version. Only be found in its internal API.
  * 
- * MIT licensed, copyright (c) by Marijn Haverbeke and others at
- * CodeMirror.
+ * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
+ * and others. Licensed under MIT.
  * 
  * @see https://github.com/codemirror/view/blob/main/src/draw-selection.ts
  */
@@ -83,6 +83,8 @@ const layerMarkersPatch = (settings: AnimatedCursorSettings) => function (view: 
  * Debounce the cursor blink by delaying its layer element from being
  * blink-animated, instead of changing its animation keyframe each layer
  * update.
+ * 
+ * This is according to the cursor blink mechanism in VSCode.
  */
 const blinkDebouncer = debounce((layerEl: HTMLElement) => {
 	layerEl.addClass("cm-blinkLayer");
