@@ -1,8 +1,9 @@
 import { App, Editor, EventRef, MarkdownView, Plugin } from "obsidian";
-import { patchCursorPlugin } from "src/patch";
+import { patchCursorLayer } from "src/patch";
 import { AnimatedCursorSettingTab } from "src/setting-tab";
 import { tableCellObserver } from "src/observer";
 import { hookCursorPlugin } from "src/hook";
+import { CursorPluginInstance } from "src/typings";
 
 export interface AnimatedCursorSettings {
 	useTransform: boolean;
@@ -28,6 +29,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 	 */
 	private alreadyPatched: boolean;
 	private tryPatchRef?: EventRef;
+	private cursorPlugin?: CursorPluginInstance;
 
 	public async onload(): Promise<void> {
 		await this.loadSettings();
@@ -62,8 +64,9 @@ export default class AnimatedCursorPlugin extends Plugin {
 			this.app.workspace.offref(this.tryPatchRef);
 
 		iterMarkdownView(this.app, view => {
-			let cursorPlugin = hookCursorPlugin(view.editor.cm);
-			cursorPlugin?.dom.removeClass("cm-blinkLayer");
+			if (!this.cursorPlugin?.spec) return;
+			let layer = view.editor.cm.plugin(this.cursorPlugin.spec);
+			layer?.dom.removeClass("cm-blinkLayer");
 		});
 
 		console.log("Unload Animated Cursor plugin");
@@ -88,15 +91,16 @@ export default class AnimatedCursorPlugin extends Plugin {
 		let editorView = editor.cm,
 			cursorPlugin = hookCursorPlugin(editorView);
 
-		if (!cursorPlugin) {
+		if (!cursorPlugin?.value) {
 			// eslint-disable-next-line no-unused-labels
 			DEVEL: console.log("Animated Cursor: patch failed");
 			return;
 		}
 
 		// Will be uninstalled automatically on plugin unload.
-		this.register(patchCursorPlugin(cursorPlugin, this.settings));
+		this.register(patchCursorLayer(cursorPlugin.value, this.settings));
 		this.alreadyPatched = true;
+		this.cursorPlugin = cursorPlugin;
 
 		// Detach the handler after a successful attemp.
 		if (this.tryPatchRef) {

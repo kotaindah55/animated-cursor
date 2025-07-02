@@ -103,14 +103,13 @@ function getTableCellCm(state: EditorState): EditorView | undefined {
 }
 
 /**
- * Patch the cursor plugin and return the original config that can be
- * restored again.
+ * Patch the cursor layer and return the uninstaller to revert the patch.
  * 
  * @returns A patch uninstaller.
  * 
  * @remark **Should not be executed again after successful hook attemp**
  */
-export function patchCursorPlugin(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings) {
+export function patchCursorLayer(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings) {
 	return around(cursorPlugin.layer, {
 		// Patch the update handler.
 		update: () => layerUpdaterPatch,

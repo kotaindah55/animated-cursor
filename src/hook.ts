@@ -1,5 +1,5 @@
 import { EditorView, LayerConfig, MeasureRequest, PluginInstance } from "@codemirror/view";
-import { CursorLayerView, CursorPluginInstance } from "src/typings";
+import { CursorPluginInstance } from "src/typings";
 
 /** Ensure that it is a layer config. */
 function isLayerConfig(object: object): object is LayerConfig {
@@ -43,7 +43,7 @@ function isCursorPlugin(instance: PluginInstance): instance is CursorPluginInsta
 }
 
 /** Hook the builtin cursor plugin provided by Obsidian. */
-export function hookCursorPlugin(view: EditorView): CursorLayerView | null | undefined {
+export function hookCursorPlugin(view: EditorView): CursorPluginInstance | undefined {
 	// @ts-ignore We ignore view.plugins from being checked because it's
 	// labeled internally as a private property.
 	let pluginInstances = view.plugins as PluginInstance[];
@@ -51,5 +51,5 @@ export function hookCursorPlugin(view: EditorView): CursorLayerView | null | und
 		(instance): instance is CursorPluginInstance => {
 			return !!instance.value && isCursorPlugin(instance);
 		}
-	)?.value;
+	);
 }
