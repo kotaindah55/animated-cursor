@@ -17,6 +17,13 @@ Give your cursor a simple, yet smooth, move animation. Inspired by Microsoft Off
 - Support multi-cursor.
 - Adjustable cursor speed and blink duration (via [Style Settings][style-settings] plugin).
 
+## 🎨 What makes it different?
+
+- **Works as native cursor**. This plugin patch existing Obsidian cursor, avoiding any unintended calculations.
+  The same plugin before creates another cursor instance, yet still let Obsidian calculate its own cursor.
+- **Hardly relies on CodeMirror API**. It's the secret of the consistency of the cursor behavior. Thus, it
+  doesn't face any meaningful problems with multi-cursor, canvas, etc.
+
 ## 📦 Installation
 
 - Manual
