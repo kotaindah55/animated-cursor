@@ -16,22 +16,17 @@ const layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
 		update.transactions.some(tr => !!tr.annotation(tableCellFocusChange))
 	) return false;
 
-	let hasTableCellFocused = false,
-		tableCellCm = getTableCellCm(update.state);
+	let tableCellCm = getTableCellCm(update.state);
 	if (tableCellCm === update.view) return false;
 
 	// Toggle "cm-overTableCell" class, depends on editor's focus state.
-	if (!update.view.hasFocus && tableCellCm?.hasFocus) {
-		dom.addClass("cm-overTableCell");
-		hasTableCellFocused = true;
-	} else {
-		dom.removeClass("cm-overTableCell");
-	}
+	let tableHasFocus = !update.view.hasFocus && (tableCellCm?.hasFocus ?? false);
+	dom.toggleClass("cm-overTableCell", tableHasFocus);
 
 	// Reset the blink layer.
 	if (
 		(update.docChanged || update.selectionSet) &&
-		(update.view.hasFocus || hasTableCellFocused)
+		(update.view.hasFocus || tableHasFocus)
 	) {
 		dom.removeClass("cm-blinkLayer");
 		// Debounce the blink.
@@ -49,7 +44,7 @@ const layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
  * version. Only be found in its internal API.
  * 
  * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
- * and others. Licensed under MIT.
+ * and others at CodeMirror. Licensed under MIT.
  * 
  * @see https://github.com/codemirror/view/blob/main/src/draw-selection.ts
  */

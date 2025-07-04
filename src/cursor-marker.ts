@@ -6,8 +6,8 @@ import { debounce } from "obsidian";
  * Get scroller top and left position. Based on CodeMirror's `getBase()`
  * function with some modifications.
  * 
- * MIT licensed, copyright (c) by Marijn Haverbeke and others at
- * CodeMirror.
+ * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
+ * and others at CodeMirror. Licensed under MIT.
  * 
  * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */
@@ -28,8 +28,8 @@ function getBaseCoords(view: EditorView): { top: number, left: number } {
  * with ability to debounce the DOM adjuster. Based on CodeMirror's
  * `RectangleMarker` with some modifications.
  * 
- * MIT licensed, copyright (c) by Marijn Haverbeke and others at
- * CodeMirror.
+ * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
+ * and others at CodeMirror. Licensed under MIT.
  * 
  * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */

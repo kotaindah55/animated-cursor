@@ -2,7 +2,7 @@ import AnimatedCursorPlugin from "src/main";
 import { App, PluginSettingTab, Setting } from "obsidian"
 
 export class AnimatedCursorSettingTab extends PluginSettingTab {
-	public plugin: AnimatedCursorPlugin;
+	public readonly plugin: AnimatedCursorPlugin;
 
 	constructor(app: App, plugin: AnimatedCursorPlugin) {
 		super(app, plugin);

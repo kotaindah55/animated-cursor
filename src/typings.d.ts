@@ -20,7 +20,7 @@ declare module "@codemirror/view" {
 
 	/**
 	 * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
-	 * and others. Licensed under MIT.
+	 * and others at CodeMirror. Licensed under MIT.
 	 * 
 	 * @see https://github.com/codemirror/view/blob/main/src/layer.ts
 	 */
@@ -40,7 +40,7 @@ declare module "@codemirror/view" {
 
 	/**
 	 * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
-	 * and others. Licensed under MIT.
+	 * and others at CodeMirror. Licensed under MIT.
 	 * 
 	 * @see https://github.com/codemirror/view/blob/main/src/extension.ts
 	 */
@@ -52,7 +52,7 @@ declare module "@codemirror/view" {
 
 	/**
 	 * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
-	 * and others. Licensed under MIT.
+	 * and others at CodeMirror. Licensed under MIT.
 	 * 
 	 * @see https://github.com/codemirror/view/blob/main/src/extension.ts
 	 */

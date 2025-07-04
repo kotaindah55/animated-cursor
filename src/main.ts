@@ -22,7 +22,6 @@ function iterMarkdownView(app: App, callback: (view: MarkdownView) => unknown): 
 
 export default class AnimatedCursorPlugin extends Plugin {
 	public settings: AnimatedCursorSettings;
-	public settingTab: AnimatedCursorSettingTab;
 
 	/**
 	 * If any, it indicates that the cursor plugin is already patched.
@@ -36,6 +35,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 
 		this.alreadyPatched = false;
 		this.addSettingTab(new AnimatedCursorSettingTab(this.app, this));
+		this.registerEditorExtension(tableCellObserver);
 
 		let activeEditor = this.app.workspace.activeEditor?.editor;
 		if (activeEditor) this.tryPatch(activeEditor);
@@ -43,8 +43,6 @@ export default class AnimatedCursorPlugin extends Plugin {
 			"editor-selection-change",
 			this.tryPatch.bind(this)
 		);
-
-		this.registerEditorExtension(tableCellObserver);
 
 		this.app.workspace.trigger("parse-style-settings");
 

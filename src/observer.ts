@@ -28,14 +28,14 @@ const onEditorPointerdown = (view: EditorView) => function (evt: PointerEvent): 
 
 /**
  * Used to tell main `EditorView` that table cell's `EditorView` inside
- * has focus state change.
+ * has focus state changed.
  */
 export const tableCellFocusChange = Annotation.define<boolean>();
 
 /**
  * When injected to the table cell's `EditorView`, it will dispatch
  * `tableCellFocusChange` annot to the main `EditorView` everytime table
- * cell focus state changed. Otherwise, it does nothing.
+ * cell focus state is changed. Otherwise, it does nothing.
  * 
  * Additionally, it will add `cm-hasTablePointed` while pointing a table
  * down.
@@ -43,7 +43,7 @@ export const tableCellFocusChange = Annotation.define<boolean>();
 export const tableCellObserver = ViewPlugin.define(view => {
 	let { editor } = view.state.field(editorInfoField),
 		pluginValue: PluginValue = {},
-		pointerHandler: (evt: PointerEvent) => void;
+		aborter = new AbortController();
 
 	// Exclusive to table cell EditorView.
 	if (editor?.inTableCell && editor.activeCM === view) {
@@ -56,13 +56,12 @@ export const tableCellObserver = ViewPlugin.define(view => {
 
 	// Exclusive to main EditorView.
 	if (editor?.cm === view) {
-		pointerHandler = onEditorPointerdown(view);
-		view.dom.addEventListener("pointerdown", pointerHandler, {
-			capture: true
-		});
-		pluginValue.destroy = () => view.dom.removeEventListener(
-			'pointerdown', pointerHandler
+		view.dom.addEventListener(
+			"pointerdown",
+			onEditorPointerdown(view),
+			{ capture: true, signal: aborter.signal }
 		);
+		pluginValue.destroy = () => aborter.abort();
 	}
 
 	return pluginValue;
