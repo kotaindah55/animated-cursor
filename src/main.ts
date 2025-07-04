@@ -60,8 +60,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 	}
 
 	public onunload(): void {
-		if (this.tryPatchRef)
-			this.app.workspace.offref(this.tryPatchRef);
+		this.cancelPatchAttempt();
 
 		iterMarkdownView(this.app, view => {
 			if (!this.cursorPlugin?.spec) return;
@@ -80,6 +79,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 	 */
 	private tryPatch(editor: Editor): void {
 		if (this.alreadyPatched) {
+			this.cancelPatchAttempt();
 			// eslint-disable-next-line no-unused-labels
 			DEVEL: console.warn("Animated cursor: try to patch the cursor while it has already been patched");
 			return;
@@ -103,12 +103,16 @@ export default class AnimatedCursorPlugin extends Plugin {
 		this.cursorPlugin = cursorPlugin;
 
 		// Detach the handler after a successful attemp.
+		this.cancelPatchAttempt();
+
+		// eslint-disable-next-line no-unused-labels
+		DEVEL: console.log("Animated Cursor: patch successful");
+	}
+
+	private cancelPatchAttempt(): void {
 		if (this.tryPatchRef) {
 			this.app.workspace.offref(this.tryPatchRef);
 			delete this.tryPatchRef;
 		}
-
-		// eslint-disable-next-line no-unused-labels
-		DEVEL: console.log("Animated Cursor: patch successful");
 	}
 }
