@@ -21,7 +21,7 @@ Give your cursor a simple, yet smooth, move animation. Inspired by Microsoft Off
 
 - **Works as native cursor**. This plugin patch existing Obsidian cursor, avoiding any unintended calculations.
   The same plugin before creates another cursor instance, yet still let Obsidian calculate its own cursor.
-- **Hardly relies on CodeMirror API**. It's the secret of the consistency of the cursor behavior. Thus, it
+- **Hardly relies on [CodeMirror][] API**. It's the secret of the consistency of the cursor behavior. Thus, it
   doesn't face any meaningful problems with multi-cursor, canvas, etc.
 
 ## 📦 Installation
@@ -70,16 +70,16 @@ Feel free to let me know if you find any bugs...
 
 ## ©️ Attribution
 
-This plugin includes some of the source codes developed by [Marijnh Haverbeke][marijn] and the others at [CodeMirror][codemirror], with some modifications. Licensed with MIT.
+This plugin includes some of the source codes developed by [Marijnh Haverbeke][marijnh] and the others at [CodeMirror][], with some modifications. All their works are licensed under MIT.
 
 ## 🙏 Acknowledgment
 
 Thanks to:
 - [VSCode](https://github.com/microsoft/vscode) for the smooth cursor concept.
-- [CodeMirror](https://github.com/codemirror), [Marijnh](https://github.com/marijnh), and its community.
+- [CodeMirror][], [Marijnh][], and its community.
 
-[codemirror]: https://github.com/codemirror
-[marijn]: https://github.com/marijnh
+[CodeMirror]: https://codemirror.net
+[Marijnh]: https://github.com/marijnh
 [style-settings]: https://github.com/mgmeyers/obsidian-style-settings
 [BRAT]: https://github.com/TfTHacker/obsidian42-brat
 
