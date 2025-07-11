@@ -19,10 +19,8 @@ Give your cursor a simple, yet smooth, move animation. Inspired by Microsoft Off
 
 ## 🎨 What makes it different?
 
-- **Works as native cursor**. This plugin patch existing Obsidian cursor, avoiding any unintended calculations.
-  The same plugin before creates another cursor instance, yet still let Obsidian calculate its own cursor.
-- **Hardly relies on [CodeMirror][] API**. It's the secret of the consistency of the cursor behavior. Thus, it
-  doesn't face any meaningful problems with multi-cursor, canvas, etc.
+- **Works as native cursor**. This plugin patch existing Obsidian cursor, avoiding any unintended calculations. The same plugin before creates another cursor instance, yet still let Obsidian calculate its own cursor.
+- **Hardly relies on [CodeMirror][] API**. It's the secret of the consistency of the cursor behavior. Thus, it doesn't face any meaningful problems with multi-cursor, canvas, etc.
 
 ## 📦 Installation
 
@@ -30,11 +28,14 @@ Give your cursor a simple, yet smooth, move animation. Inspired by Microsoft Off
     - Create a folder named `animated-cursor` under `YOUR_VAULT_NAME/.obsidian/plugins`.
     - Place `manifest.json`, `main.js`, and `style.css` from the latest release into the folder.
     - Enable it through the "Community plugin" setting tab.
+- In-app
+    - Open settings.
+    - Choose "Community plugins" setting tab.
+    - Turn off "Restricted mode" if it was enabled before.
+    - Click "Browse" at "Community plugins" item.
+    - Type "Animated Cursor" in the search box.
+    - Install and enable it.
 - Using [BRAT][].
-
-> [!Note]
->
-> Currently, this plugin haven't been released yet.
 
 ## ✍️ Usage
 
