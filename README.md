@@ -85,6 +85,6 @@ Thanks to:
 [BRAT]: https://github.com/TfTHacker/obsidian42-brat
 
 [latest-version]: https://img.shields.io/github/manifest-json/v/kotaindah55/animated-cursor?label=version&link=https%3A%2F%2Fgithub.com%2Fkotaindah55%2Fanimated-cursor%2Freleases
-[current-downloads]: https://img.shields.io/github/downloads/kotaindah55/animated-cursor/total?link=https%3A%2F%2Fgithub.com%2Fkotaindah55%2Fanimated-cursor
+[current-downloads]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fobsidianmd%2Fobsidian-releases%2Fraw%2Frefs%2Fheads%2Fmaster%2Fcommunity-plugin-stats.json&query=%24.animated-cursor.downloads&label=downloads&color=green
 [current-stars]: https://img.shields.io/github/stars/kotaindah55/animated-cursor?style=flat&link=https%3A%2F%2Fgithub.com%2Fkotaindah55%2Fanimated-cursor%2Fstargazers
 [open-issues]: https://img.shields.io/github/issues-search?query=repo%3Akotaindah55%2Fanimated-cursor%20is%3Aopen&label=open%20issues&color=red&link=https%3A%2F%2Fgithub.com%2Fkotaindah55%2Fanimated-cursor%2Fissues
