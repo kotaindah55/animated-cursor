@@ -1,5 +1,5 @@
-import { EditorState } from '@codemirror/state';
-import {
+import type { EditorState } from '@codemirror/state';
+import type {
 	EditorView,
 	layer,
 	LayerConfig,
@@ -10,8 +10,6 @@ import {
 	ViewPlugin,
 	ViewUpdate
 } from '@codemirror/view';
-import 'obsidian';
-import 'monkey-around';
 
 declare module '@codemirror/view' {
 	type LayerConfig = Parameters<typeof layer>[0];

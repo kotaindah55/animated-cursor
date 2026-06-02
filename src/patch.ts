@@ -1,11 +1,11 @@
-import { EditorState } from '@codemirror/state';
-import { EditorView, ViewUpdate } from '@codemirror/view';
+import type { EditorState } from '@codemirror/state';
+import type { EditorView, ViewUpdate } from '@codemirror/view';
 import { debounce, editorInfoField } from 'obsidian';
 import { around } from 'monkey-around';
-import { CursorLayerView } from 'src/typings';
-import { AnimatedCursorSettings } from 'src/main';
-import { tableCellFocusChange } from 'src/observer';
-import CursorMarker from 'src/cursor-marker';
+import type { CursorLayerView } from './typings';
+import type { AnimatedCursorSettings } from './main';
+import { tableCellFocusChange } from './observer';
+import { CursorMarker } from './cursor-marker';
 
 /**
  * Patch for update handler of cursor layer.

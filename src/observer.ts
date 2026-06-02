@@ -1,5 +1,5 @@
 import { Annotation } from '@codemirror/state';
-import { EditorView, PluginValue, ViewPlugin } from '@codemirror/view';
+import { type EditorView, type PluginValue, ViewPlugin } from '@codemirror/view';
 import { editorInfoField } from 'obsidian';
 
 const LEFT_MOUSE_BTN = 0;

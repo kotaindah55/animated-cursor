@@ -1,10 +1,10 @@
-import AnimatedCursorPlugin from 'src/main';
-import { App, PluginSettingTab, Setting } from 'obsidian'
+import { type App, PluginSettingTab, Setting } from 'obsidian'
+import type { AnimatedCursorPlugin } from './main';
 
 export class AnimatedCursorSettingTab extends PluginSettingTab {
 	public readonly plugin: AnimatedCursorPlugin;
 
-	constructor(app: App, plugin: AnimatedCursorPlugin) {
+	public constructor(app: App, plugin: AnimatedCursorPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -25,7 +25,7 @@ export class AnimatedCursorSettingTab extends PluginSettingTab {
 			);
 	}
 
-	public hide(): void {
+	public override hide(): void {
 		// Clear all components when the tab was hidden.
 		this.containerEl.empty();
 		super.hide();

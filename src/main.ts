@@ -1,9 +1,9 @@
-import { App, Editor, EventRef, MarkdownView, Plugin } from 'obsidian';
-import { patchCursorLayer } from 'src/patch';
-import { AnimatedCursorSettingTab } from 'src/setting-tab';
-import { tableCellObserver } from 'src/observer';
-import { hookCursorPlugin } from 'src/hook';
-import { CursorPluginInstance } from 'src/typings';
+import { type App, type Editor, type EventRef, MarkdownView, Plugin } from 'obsidian';
+import { patchCursorLayer } from './patch';
+import { AnimatedCursorSettingTab } from './setting-tab';
+import { tableCellObserver } from './observer';
+import { hookCursorPlugin } from './hook';
+import type { CursorPluginInstance } from './typings';
 
 export interface AnimatedCursorSettings {
 	useTransform: boolean;
@@ -20,17 +20,17 @@ function iterMarkdownView(app: App, callback: (view: MarkdownView) => unknown): 
 	});
 }
 
-export default class AnimatedCursorPlugin extends Plugin {
-	public settings: AnimatedCursorSettings;
+export class AnimatedCursorPlugin extends Plugin {
+	public settings!: AnimatedCursorSettings;
 
 	/**
 	 * If any, it indicates that the cursor plugin is already patched.
 	 */
-	private alreadyPatched: boolean;
+	private alreadyPatched!: boolean;
 	private tryPatchRef?: EventRef;
 	private cursorPlugin?: CursorPluginInstance;
 
-	public async onload(): Promise<void> {
+	public override async onload(): Promise<void> {
 		await this.loadSettings();
 
 		this.alreadyPatched = false;
@@ -57,7 +57,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	public onunload(): void {
+	public override onunload(): void {
 		this.cancelPatchAttempt();
 
 		iterMarkdownView(this.app, view => {
@@ -114,3 +114,5 @@ export default class AnimatedCursorPlugin extends Plugin {
 		}
 	}
 }
+
+export default AnimatedCursorPlugin;

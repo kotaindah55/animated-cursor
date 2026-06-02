@@ -1,27 +1,51 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
 		"inlineSourceMap": true,
 		"inlineSources": true,
 		"module": "ESNext",
-		"target": "ES2023",
+		"target": "es2022",
+		"rootDirs": [
+			"./src",
+			"./scripts"
+		],
 		"allowJs": true,
-		"allowUnusedLabels": true,
+		"checkJs": true,
+		"exactOptionalPropertyTypes": true,
 		"noImplicitAny": true,
-		"moduleResolution": "node",
+		"noImplicitThis": true,
+		"noImplicitReturns": true,
+		"noImplicitOverride": true,
+		"noUncheckedIndexedAccess": true,
+		"strictBuiltinIteratorReturn": true,
+		"strictBindCallApply": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"useUnknownInCatchVariables": true,
+		"moduleResolution": "bundler",
 		"importHelpers": true,
 		"isolatedModules": true,
-		"strictNullChecks": true,
-		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"experimentalDecorators": true,
+		"verbatimModuleSyntax": true,
 		"lib": [
 			"DOM",
-			"ES5",
-			"ES6",
-			"ES7",
-			"ES2023",
 			"DOM.Iterable",
-			"DOM.AsyncIterable"
+			"ES2021",
+			"ES2022",
+			"ES2023",
+			"ES2024",
+			"ES2025",
+			"ESNext"
+		],
+		"types": [
+			"obsidian",
+			"node"
 		]
 	},
-	"include": ["src/**/*"]
+	"include": [
+		"src/**/*.ts",
+		"scripts/*.mts"
+	]
 }

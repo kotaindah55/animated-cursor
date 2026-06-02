@@ -1,5 +1,5 @@
-import { SelectionRange } from '@codemirror/state';
-import { Direction, EditorView, LayerMarker } from '@codemirror/view';
+import type { SelectionRange } from '@codemirror/state';
+import { type EditorView, type LayerMarker, Direction } from '@codemirror/view';
 import { debounce } from 'obsidian';
 
 /**
@@ -33,7 +33,7 @@ function getBaseCoords(view: EditorView): { top: number, left: number } {
  * 
  * @see https://github.com/codemirror/view/blob/main/src/layer.ts
  */
-export default class CursorMarker implements LayerMarker {
+export class CursorMarker implements LayerMarker {
 	public readonly className: string;
 	public readonly useTransform: boolean;
 
@@ -41,7 +41,7 @@ export default class CursorMarker implements LayerMarker {
 	public readonly top: number;
 	public readonly height: number;
 
-	constructor(className: string, left: number, top: number, height: number, useTransform: boolean) {
+	private constructor(className: string, left: number, top: number, height: number, useTransform: boolean) {
 		this.className = className;
 		// Round the position and the height avoiding using new marker upon mere
 		// fractional difference.
