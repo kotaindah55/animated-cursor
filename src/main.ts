@@ -1,4 +1,4 @@
-import { type App, type Editor, type EventRef, MarkdownView, Plugin } from 'obsidian';
+import { type App, type Editor, type EventRef, MarkdownView, Plugin } from './obsidian';
 import { patchCursorLayer } from './patch';
 import { AnimatedCursorSettingTab } from './setting-tab';
 import { tableCellObserver } from './observer';

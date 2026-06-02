@@ -1,4 +1,4 @@
-import { type App, PluginSettingTab, Setting } from 'obsidian'
+import { type App, PluginSettingTab, Setting } from './obsidian'
 import type { AnimatedCursorPlugin } from './main';
 
 export class AnimatedCursorSettingTab extends PluginSettingTab {

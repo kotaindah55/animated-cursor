@@ -1,6 +1,6 @@
 import type { SelectionRange } from '@codemirror/state';
 import { type EditorView, type LayerMarker, Direction } from '@codemirror/view';
-import { debounce } from 'obsidian';
+import { debounce } from './obsidian';
 
 /**
  * Get scroller top and left position. Based on CodeMirror's `getBase()`
