@@ -3,7 +3,7 @@ import { patchCursorLayer } from './patch';
 import { AnimatedCursorSettingTab } from './setting-tab';
 import { tableCellObserver } from './observer';
 import { hookCursorPlugin } from './hook';
-import type { CursorPluginInstance } from './typings';
+import type { CursorPluginInstance } from './types';
 
 export interface AnimatedCursorSettings {
 	useTransform: boolean;

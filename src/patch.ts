@@ -2,7 +2,7 @@ import type { EditorState } from '@codemirror/state';
 import type { EditorView, ViewUpdate } from '@codemirror/view';
 import { debounce, editorInfoField } from 'obsidian';
 import { around } from 'monkey-around';
-import type { CursorLayerView } from './typings';
+import type { CursorLayerView } from './types';
 import type { AnimatedCursorSettings } from './main';
 import { tableCellFocusChange } from './observer';
 import { CursorMarker } from './cursor-marker';

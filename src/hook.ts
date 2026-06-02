@@ -1,5 +1,5 @@
 import { EditorView, type LayerConfig, type MeasureRequest, type PluginInstance } from '@codemirror/view';
-import type { CursorPluginInstance } from './typings';
+import type { CursorPluginInstance } from './types';
 
 /**
  * Ensure that it is a `LayerConfig`.
