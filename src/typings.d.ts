@@ -1,4 +1,4 @@
-import { EditorState } from "@codemirror/state";
+import { EditorState } from '@codemirror/state';
 import {
 	EditorView,
 	layer,
@@ -9,11 +9,11 @@ import {
 	PluginValue,
 	ViewPlugin,
 	ViewUpdate
-} from "@codemirror/view";
-import "obsidian";
-import "monkey-around";
+} from '@codemirror/view';
+import 'obsidian';
+import 'monkey-around';
 
-declare module "@codemirror/view" {
+declare module '@codemirror/view' {
 	type LayerConfig = Parameters<typeof layer>[0];
 
 	type LayerPluginInstance = PluginInstance<LayerView>;
@@ -66,7 +66,7 @@ declare module "@codemirror/view" {
 	}
 }
 
-declare module "obsidian" {
+declare module 'obsidian' {
 	interface Editor {
 		/**
 		 * Main CodeMirror's `EditorView` instance of the editor.
@@ -87,7 +87,7 @@ declare module "obsidian" {
 		/**
 		 * Triggered when any available editor has its selection changed.
 		 */
-		on(name: "editor-selection-change", callback: (editor: Editor, info: MarkdownFileInfo) => unknown, ctx?: unknown): EventRef;
+		on(name: 'editor-selection-change', callback: (editor: Editor, info: MarkdownFileInfo) => unknown, ctx?: unknown): EventRef;
 	}
 }
 

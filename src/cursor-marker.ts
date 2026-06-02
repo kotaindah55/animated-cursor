@@ -1,6 +1,6 @@
-import { SelectionRange } from "@codemirror/state";
-import { Direction, EditorView, LayerMarker } from "@codemirror/view";
-import { debounce } from "obsidian";
+import { SelectionRange } from '@codemirror/state';
+import { Direction, EditorView, LayerMarker } from '@codemirror/view';
+import { debounce } from 'obsidian';
 
 /**
  * Get scroller top and left position. Based on CodeMirror's `getBase()`
@@ -140,11 +140,11 @@ export default class CursorMarker implements LayerMarker {
 				transform: `translateX(${this.left}px) translateY(${this.top}px)`
 			});
 			else cursorEl.setCssStyles({
-				left: this.left + "px",
-				top: this.top + "px"
+				left: this.left + 'px',
+				top: this.top + 'px'
 			});
 	
-			cursorEl.setCssStyles({ height: this.height + "px" });
+			cursorEl.setCssStyles({ height: this.height + 'px' });
 		})
 	}
 

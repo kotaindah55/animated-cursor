@@ -1,9 +1,9 @@
-import { App, Editor, EventRef, MarkdownView, Plugin } from "obsidian";
-import { patchCursorLayer } from "src/patch";
-import { AnimatedCursorSettingTab } from "src/setting-tab";
-import { tableCellObserver } from "src/observer";
-import { hookCursorPlugin } from "src/hook";
-import { CursorPluginInstance } from "src/typings";
+import { App, Editor, EventRef, MarkdownView, Plugin } from 'obsidian';
+import { patchCursorLayer } from 'src/patch';
+import { AnimatedCursorSettingTab } from 'src/setting-tab';
+import { tableCellObserver } from 'src/observer';
+import { hookCursorPlugin } from 'src/hook';
+import { CursorPluginInstance } from 'src/typings';
 
 export interface AnimatedCursorSettings {
 	useTransform: boolean;
@@ -14,7 +14,7 @@ export const DEFAULT_SETTINGS: AnimatedCursorSettings = {
 }
 
 function iterMarkdownView(app: App, callback: (view: MarkdownView) => unknown): void {
-	app.workspace.getLeavesOfType("markdown").forEach(leaf => {
+	app.workspace.getLeavesOfType('markdown').forEach(leaf => {
 		if (leaf.view instanceof MarkdownView)
 			callback(leaf.view);
 	});
@@ -40,13 +40,13 @@ export default class AnimatedCursorPlugin extends Plugin {
 		let activeEditor = this.app.workspace.activeEditor?.editor;
 		if (activeEditor) this.tryPatch(activeEditor);
 		else this.tryPatchRef = this.app.workspace.on(
-			"editor-selection-change",
+			'editor-selection-change',
 			this.tryPatch.bind(this)
 		);
 
-		this.app.workspace.trigger("parse-style-settings");
+		this.app.workspace.trigger('parse-style-settings');
 
-		console.log("Load Animated Cursor plugin");
+		console.log('Load Animated Cursor plugin');
 	}
 
 	public async loadSettings(): Promise<void> {
@@ -63,10 +63,10 @@ export default class AnimatedCursorPlugin extends Plugin {
 		iterMarkdownView(this.app, view => {
 			if (!this.cursorPlugin?.spec) return;
 			let layer = view.editor.cm.plugin(this.cursorPlugin.spec);
-			layer?.dom.removeClass("cm-blinkLayer");
+			layer?.dom.removeClass('cm-blinkLayer');
 		});
 
-		console.log("Unload Animated Cursor plugin");
+		console.log('Unload Animated Cursor plugin');
 	}
 
 	/**
@@ -79,19 +79,19 @@ export default class AnimatedCursorPlugin extends Plugin {
 		if (this.alreadyPatched) {
 			this.cancelPatchAttempt();
 			// eslint-disable-next-line no-unused-labels
-			DEVEL: console.warn("Animated cursor: try to patch the cursor while it has already been patched");
+			DEVEL: console.warn('Animated cursor: try to patch the cursor while it has already been patched');
 			return;
 		}
 
 		// eslint-disable-next-line no-unused-labels
-		DEVEL: console.log("Animated Cursor: try to patch the cursor");
+		DEVEL: console.log('Animated Cursor: try to patch the cursor');
 
 		let editorView = editor.cm,
 			cursorPlugin = hookCursorPlugin(editorView);
 
 		if (!cursorPlugin?.value) {
 			// eslint-disable-next-line no-unused-labels
-			DEVEL: console.log("Animated Cursor: patch failed");
+			DEVEL: console.log('Animated Cursor: patch failed');
 			return;
 		}
 
@@ -104,7 +104,7 @@ export default class AnimatedCursorPlugin extends Plugin {
 		this.cancelPatchAttempt();
 
 		// eslint-disable-next-line no-unused-labels
-		DEVEL: console.log("Animated Cursor: patch successful");
+		DEVEL: console.log('Animated Cursor: patch successful');
 	}
 
 	private cancelPatchAttempt(): void {

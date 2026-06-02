@@ -1,6 +1,6 @@
-import { Annotation } from "@codemirror/state";
-import { EditorView, PluginValue, ViewPlugin } from "@codemirror/view";
-import { editorInfoField } from "obsidian";
+import { Annotation } from '@codemirror/state';
+import { EditorView, PluginValue, ViewPlugin } from '@codemirror/view';
+import { editorInfoField } from 'obsidian';
 
 const LEFT_MOUSE_BTN = 0;
 
@@ -13,15 +13,15 @@ const onEditorPointerdown = (view: EditorView) => function (evt: PointerEvent): 
 	// Scan for pointed table.
 	let path = evt.composedPath(),
 		isTablePointed = path.some(
-			target => target instanceof HTMLElement && target.hasClass("table-wrapper")
+			target => target instanceof HTMLElement && target.hasClass('table-wrapper')
 		);
 
 	if (isTablePointed) {
 		let { scrollDOM } = view;
-		scrollDOM.addClass("cm-hasTablePointed");
+		scrollDOM.addClass('cm-hasTablePointed');
 		// Remove the class after releasing the pointer.
-		scrollDOM.win.addEventListener("pointerup", () => {
-			scrollDOM.removeClass("cm-hasTablePointed");
+		scrollDOM.win.addEventListener('pointerup', () => {
+			scrollDOM.removeClass('cm-hasTablePointed');
 		}, { once: true });
 	}
 }
@@ -57,7 +57,7 @@ export const tableCellObserver = ViewPlugin.define(view => {
 	// Exclusive to main EditorView.
 	if (editor?.cm === view) {
 		view.dom.addEventListener(
-			"pointerdown",
+			'pointerdown',
 			onEditorPointerdown(view),
 			{ capture: true, signal: aborter.signal }
 		);

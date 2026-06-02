@@ -1,11 +1,11 @@
-import { EditorState } from "@codemirror/state";
-import { EditorView, ViewUpdate } from "@codemirror/view";
-import { debounce, editorInfoField } from "obsidian";
-import { around } from "monkey-around";
-import { CursorLayerView } from "src/typings";
-import { AnimatedCursorSettings } from "src/main";
-import { tableCellFocusChange } from "src/observer";
-import CursorMarker from "src/cursor-marker";
+import { EditorState } from '@codemirror/state';
+import { EditorView, ViewUpdate } from '@codemirror/view';
+import { debounce, editorInfoField } from 'obsidian';
+import { around } from 'monkey-around';
+import { CursorLayerView } from 'src/typings';
+import { AnimatedCursorSettings } from 'src/main';
+import { tableCellFocusChange } from 'src/observer';
+import CursorMarker from 'src/cursor-marker';
 
 /**
  * Patch for update handler of cursor layer.
@@ -19,16 +19,16 @@ const layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
 	let tableCellCm = getTableCellCm(update.state);
 	if (tableCellCm === update.view) return false;
 
-	// Toggle "cm-overTableCell" class, depends on editor's focus state.
+	// Toggle 'cm-overTableCell' class, depends on editor's focus state.
 	let tableHasFocus = !update.view.hasFocus && (tableCellCm?.hasFocus ?? false);
-	dom.toggleClass("cm-overTableCell", tableHasFocus);
+	dom.toggleClass('cm-overTableCell', tableHasFocus);
 
 	// Reset the blink layer.
 	if (
 		(update.docChanged || update.selectionSet) &&
 		(update.view.hasFocus || tableHasFocus)
 	) {
-		dom.removeClass("cm-blinkLayer");
+		dom.removeClass('cm-blinkLayer');
 		// Debounce the blink.
 		blinkDebouncer(dom);
 		return true;
@@ -61,7 +61,7 @@ const layerMarkersPatch = (settings: AnimatedCursorSettings) => function (view: 
 		// Primary cursor will be drawn as DOM, opposite to what Obsidian
 		// implemented, so the primary is able to be animated.
 		let isPrimary = range == state.selection.main,
-			className = "cm-cursor " + (isPrimary ? "cm-cursor-primary" : "cm-cursor-secondary"),
+			className = 'cm-cursor ' + (isPrimary ? 'cm-cursor-primary' : 'cm-cursor-secondary'),
 			cursorMarker = tableCellView
 				? CursorMarker.forTableCellRange(view, tableCellView, className, range, settings.useTransform)
 				: CursorMarker.forRange(view, className, range, settings.useTransform);
@@ -80,7 +80,7 @@ const layerMarkersPatch = (settings: AnimatedCursorSettings) => function (view: 
  * This is according to the cursor blink mechanism in VSCode.
  */
 const blinkDebouncer = debounce((layerEl: HTMLElement) => {
-	layerEl.addClass("cm-blinkLayer");
+	layerEl.addClass('cm-blinkLayer');
 }, 350, true);
 
 /**

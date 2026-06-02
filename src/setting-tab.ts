@@ -1,5 +1,5 @@
-import AnimatedCursorPlugin from "src/main";
-import { App, PluginSettingTab, Setting } from "obsidian"
+import AnimatedCursorPlugin from 'src/main';
+import { App, PluginSettingTab, Setting } from 'obsidian'
 
 export class AnimatedCursorSettingTab extends PluginSettingTab {
 	public readonly plugin: AnimatedCursorPlugin;
@@ -11,10 +11,10 @@ export class AnimatedCursorSettingTab extends PluginSettingTab {
 
 	public display(): void {
 		new Setting(this.containerEl)
-			.setName("Slightly more smoothly")
+			.setName('Slightly more smoothly')
 			.setDesc(
-				"If turned on, cursor moves slightly more smoothly, especially when the user moves it continously. " +
-				"There is a downside, the cursor appears blurry."
+				'If turned on, cursor moves slightly more smoothly, especially when the user moves it continously. ' +
+				'There is a downside, the cursor appears blurry.'
 			)
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.useTransform)
