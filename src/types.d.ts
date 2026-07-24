@@ -98,4 +98,6 @@ export interface CursorLayerView extends LayerView {
 	readonly layer: LayerConfig;
 }
 
+export type CursorPlugin = ViewPlugin<CursorLayerView>;
+
 export type CursorPluginInstance = PluginInstance<CursorLayerView>;
