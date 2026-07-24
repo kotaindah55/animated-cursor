@@ -1,73 +1,89 @@
 import { around } from 'monkey-around';
 import type { EditorView, LayerConfig, ViewUpdate } from './@codemirror/view';
 import { type App, type Debouncer, debounce, MarkdownView } from './obsidian';
-import type { AnimatedCursorSettings } from './main';
+import type { AnimatedCursorPlugin } from './main';
 import { tableCellFocusChange } from './observer';
 import { CursorMarker } from './cursor-marker';
+import { getTableCellCM } from './utils';
+import type { CursorPlugin } from './types';
 
 /**
- * Patch for update handler of cursor layer.
+ * Debounce the cursor blink by delaying its layer element from being
+ * blink-animated, instead of changing its animation keyframe each layer
+ * update.
+ * 
+ * This is according to the cursor blink mechanism in VSCode.
  */
-const layerUpdaterPatch = function (update: ViewUpdate, dom: HTMLElement) {
-	if (
-		!update.docChanged && !update.selectionSet &&
-		update.transactions.some(tr => !!tr.annotation(tableCellFocusChange))
-	) return false;
-
-	let tableCellCm = getTableCellCm(update.state);
-	if (tableCellCm === update.view) return false;
-
-	// Toggle 'cm-overTableCell' class, depends on editor's focus state.
-	let tableHasFocus = !update.view.hasFocus && (tableCellCm?.hasFocus ?? false);
-	dom.toggleClass('cm-overTableCell', tableHasFocus);
-
-	// Reset the blink layer.
-	if (
-		(update.docChanged || update.selectionSet) &&
-		(update.view.hasFocus || tableHasFocus)
-	) {
-		dom.removeClass('cm-blinkLayer');
-		// Debounce the blink.
-		blinkDebouncer(dom);
-		return true;
-	}
-
-	return false;
-}
+const requestBlink: Debouncer<[layerEl: HTMLElement], void> = debounce(
+	layerEl => layerEl.addClass('cm-blinkLayer'),
+	350,
+	true
+);
 
 /**
- * Patch for marker maker of cursor layer.
- * 
- * Taken from, and modified of CodeMirror's `cursorLayer.markers`
- * version. Only be found in its internal API.
- * 
- * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
- * and others at CodeMirror. Licensed under MIT.
- * 
- * @see https://github.com/codemirror/view/blob/main/src/draw-selection.ts
+ * Patch builtin cursor `LayerConfig`.
  */
-const layerMarkersPatch = (settings: AnimatedCursorSettings) => function (view: EditorView) {
-	let { state } = view,
-		tableCellView: EditorView | undefined,
-		cursors: CursorMarker[] = [];
-	
-	if (!view.hasFocus) tableCellView = getTableCellCm(state);
-	if (tableCellView) ({ state } = tableCellView);
-	if (view === tableCellView) return cursors;
+export function patchCursorLayerConfig(plugin: AnimatedCursorPlugin, cursorLayerConfig: LayerConfig): void {
+	plugin.register(around(cursorLayerConfig, {
+		// The old method will set animation-duration to the layer directly.
+		// This particular patch prevents it.
+		mount: () => function (): void {},
 
-	for (let range of state.selection.ranges) {
-		// Primary cursor will be drawn as DOM, opposite to what Obsidian
-		// implemented, so the primary is able to be animated.
-		let isPrimary = range == state.selection.main,
-			className = 'cm-cursor ' + (isPrimary ? 'cm-cursor-primary' : 'cm-cursor-secondary'),
-			cursorMarker = tableCellView
-				? CursorMarker.forTableCellRange(view, tableCellView, className, range, settings.useTransform)
-				: CursorMarker.forRange(view, className, range, settings.useTransform);
+		// Patch the update handler.
+		update: () => function (update: ViewUpdate, dom: HTMLElement): boolean {
+			if (
+				!update.docChanged && !update.selectionSet &&
+				update.transactions.some(tr => !!tr.annotation(tableCellFocusChange))
+			) return false;
 
-		if (cursorMarker)
-			cursors.push(cursorMarker);
-	}
-	return cursors;
+			let tableCellCm = getTableCellCM(update.state);
+			if (tableCellCm === update.view) return false;
+
+			// Toggle 'cm-overTableCell' class, depends on editor's focus state.
+			let tableHasFocus = !update.view.hasFocus && (tableCellCm?.hasFocus ?? false);
+			dom.toggleClass('cm-overTableCell', tableHasFocus);
+
+			// Reset the blink layer.
+			if (
+				(update.docChanged || update.selectionSet) &&
+				(update.view.hasFocus || tableHasFocus)
+			) {
+				dom.removeClass('cm-blinkLayer');
+				// Debounce the blink.
+				requestBlink(dom);
+				return true;
+			}
+
+			return false;
+		},
+
+		// Patch marker builder.
+		markers: () => function (view: EditorView): CursorMarker[] {
+			let { state } = view,
+				tableCellView: EditorView | undefined,
+				cursors: CursorMarker[] = [];
+			
+			if (!view.hasFocus) tableCellView = getTableCellCM(state);
+			if (tableCellView) state = tableCellView.state;
+			if (view === tableCellView) return cursors;
+
+			for (let range of state.selection.ranges) {
+				// Primary cursor will be drawn as DOM, opposite to what Obsidian
+				// implemented, so the primary is able to be animated.
+				let isPrimary = range == state.selection.main,
+					className = 'cm-cursor ' + (isPrimary ? 'cm-cursor-primary' : 'cm-cursor-secondary');
+
+				let cursorMarker = tableCellView
+					? CursorMarker.forTableCellRange(view, tableCellView, className, range, plugin.settings.useTransform)
+					: CursorMarker.forRange(view, className, range, plugin.settings.useTransform);
+
+				if (cursorMarker)
+					cursors.push(cursorMarker);
+			}
+
+			return cursors;
+		}
+	}));
 }
 
 /**
