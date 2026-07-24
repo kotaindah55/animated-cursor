@@ -5,64 +5,65 @@ import {
 	EditorView
 } from './@codemirror/view';
 import type { CursorPluginInstance } from './types';
+import { isFunction } from './utils';
 
 /**
  * Ensure that it is a `LayerConfig`.
  */
-function isLayerConfig(object: object): object is LayerConfig {
+function isLayerConfig(obj: object): obj is LayerConfig {
 	return (
-		'above' in object && typeof object.above == 'boolean' &&
-		(!('class' in object) || typeof object.class == 'string') &&
-		(!('updateOnDocViewUpdate' in object) || typeof object.updateOnDocViewUpdate == 'boolean') &&
-		'update' in object && typeof object.update == 'function' &&
-		'markers' in object && typeof object.markers == 'function' &&
-		(!('mount' in object) || typeof object.mount == 'function') &&
-		(!('destroy' in object) || typeof object.destroy == 'function')
+		'above' in obj && isBoolean(obj.above) &&
+		(!('class' in obj) || String.isString(obj.class)) &&
+		(!('updateOnDocViewUpdate' in obj) || isBoolean(obj.updateOnDocViewUpdate)) &&
+		'update' in obj && isFunction(obj.update) &&
+		'markers' in obj && isFunction(obj.markers) &&
+		(!('mount' in obj) || isFunction(obj.mount)) &&
+		(!('destroy' in obj) || isFunction(obj.destroy))
 	);
 }
 
 /**
  * Ensure that it is a `MeasureRequest` instance.
  */
-function isMeasureReq(object: object): object is MeasureRequest<unknown> {
+function isMeasureReq(obj: object): obj is MeasureRequest<unknown> {
 	return (
-		'read' in object && typeof object.read == 'function' &&
-		(!('write' in object) || typeof object.write == 'function')
+		'read' in obj && isFunction(obj.read) &&
+		(!('write' in obj) || isFunction(obj.write))
 	)
 }
 
 /**
  * Ensure that the plugin value is a `CursorLayerView` instance.
  */
-function isCursorPlugin(instance: PluginInstance): instance is CursorPluginInstance {
+function isCursorPluginInstance(instance: PluginInstance): instance is CursorPluginInstance {
 	let pluginValue = instance.value;
 	return (
 		!!pluginValue &&
 		'view' in pluginValue && pluginValue.view instanceof EditorView &&
 		'layer' in pluginValue && !!pluginValue.layer && isLayerConfig(pluginValue.layer) &&
 		'measureReq' in pluginValue && !!pluginValue.measureReq && isMeasureReq(pluginValue.measureReq) &&
-		'drawn' in pluginValue && pluginValue.drawn instanceof Array &&
+		'drawn' in pluginValue && Array.isArray(pluginValue.drawn) &&
 		'dom' in pluginValue && pluginValue.dom instanceof HTMLElement &&
-		'scaleX' in pluginValue && typeof pluginValue.scaleX == 'number' &&
-		'scaleY' in pluginValue && typeof pluginValue.scaleY == 'number' &&
-		'setOrder' in pluginValue && typeof pluginValue.setOrder == 'function' &&
-		'measure' in pluginValue && typeof pluginValue.measure == 'function' &&
-		'scale' in pluginValue && typeof pluginValue.scale == 'function' &&
-		'draw' in pluginValue && typeof pluginValue.draw == 'function' &&
+		'scaleX' in pluginValue && Number.isNumber(pluginValue.scaleX) &&
+		'scaleY' in pluginValue && Number.isNumber(pluginValue.scaleY) &&
+		'setOrder' in pluginValue && isFunction(pluginValue.setOrder) &&
+		'measure' in pluginValue && isFunction(pluginValue.measure) &&
+		'scale' in pluginValue && isFunction(pluginValue.scale) &&
+		'draw' in pluginValue && isFunction(pluginValue.draw) &&
 		pluginValue.layer.class == 'cm-cursorLayer'
 	);
 }
 
 /**
- * Hook the builtin cursor plugin provided by Obsidian.
+ * Hook builtin `CursorPluginInstance`.
  */
-export function hookCursorPlugin(view: EditorView): CursorPluginInstance | undefined {
+export function hookCursorPluginInstance(view: EditorView): CursorPluginInstance | undefined {
 	// @ts-ignore We ignore view.plugins from being checked because it's
 	// labeled internally as a private property.
 	let pluginInstances = view.plugins as PluginInstance[];
 	return pluginInstances.find(
 		(instance): instance is CursorPluginInstance => {
-			return !!instance.value && isCursorPlugin(instance);
+			return !!instance.value && isCursorPluginInstance(instance);
 		}
 	);
 }
