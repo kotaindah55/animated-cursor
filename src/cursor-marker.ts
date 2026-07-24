@@ -1,16 +1,25 @@
 import type { SelectionRange } from './@codemirror/state';
 import type { EditorView, LayerMarker } from './@codemirror/view';
- */
-function getBaseCoords(view: EditorView): { top: number, left: number } {
-	let scrollerRect = view.scrollDOM.getBoundingClientRect(),
-		left = view.textDirection == Direction.LTR
-			? scrollerRect.left
-			: scrollerRect.right - view.scrollDOM.clientWidth * view.scaleX;
+import { type Debouncer, debounce } from './obsidian';
+import { getBaseCoords } from './utils';
 
-	return {
-		top: scrollerRect.top - view.scrollDOM.scrollTop * view.scaleY,
-		left: left - view.scrollDOM.scrollLeft * view.scaleX
-	}
+/**
+ * Adjust cursor position using information provided by `marker`.
+ */
+function adjustCursor(marker: CursorMarker, cursorEl: HTMLElement): void {
+	// Hack to smooth the movement and remove jittering
+	cursorEl.win.requestAnimationFrame(() => {
+		let styles: Partial<CSSStyleDeclaration> = {};
+
+		if (marker.useTransform) {
+			styles.transform = `translateX(${marker.left}px) translateY(${marker.top}px)`;
+		} else {
+			styles.left = `${marker.left}px`;
+			styles.top = `${marker.top}px`;
+		}
+
+		cursorEl.setCssStyles(styles);
+	});
 }
 
 /**
@@ -31,19 +40,22 @@ export class CursorMarker implements LayerMarker {
 	public readonly top: number;
 	public readonly height: number;
 
+	private requestAdjust?: Debouncer<Parameters<typeof adjustCursor>, void>;
+
 	private constructor(className: string, left: number, top: number, height: number, useTransform: boolean) {
 		this.className = className;
+		this.useTransform = useTransform;
+
 		// Round the position and the height avoiding using new marker upon mere
 		// fractional difference.
 		this.left = Math.round(left);
 		this.top = Math.round(top);
 		this.height = Math.round(height);
-		this.useTransform = useTransform;
 	}
 
 	public draw(): HTMLElement {
 		let cursorEl = createDiv(this.className);
-		this.adjust(cursorEl);
+		adjustCursor(this, cursorEl);
 		return cursorEl;
 	}
 
@@ -53,10 +65,11 @@ export class CursorMarker implements LayerMarker {
 			prev.useTransform != this.useTransform
 		) return false;
 
-		// Reuse previous debouncer.
-		this.requestAdjust = prev.requestAdjust ?? this.requestAdjust;
+		// Reuse previous debouncer if any.
+		this.requestAdjust = prev.requestAdjust ?? this.requestAdjust ?? debounce(adjustCursor, 10);
 		// Disable rapid position change for updating process.
-		this.requestAdjust(this.adjust, cursorEl);
+		this.requestAdjust(this, cursorEl);
+
 		return true;
 	}
 
@@ -81,6 +94,7 @@ export class CursorMarker implements LayerMarker {
 	public static forRange(view: EditorView, className: string, range: SelectionRange, useTransform: boolean): CursorMarker | null {
 		let cursorPos = view.coordsAtPos(range.head, range.assoc || 1);
 		if (!cursorPos) return null;
+
 		let baseCoords = getBaseCoords(view);
 		return new CursorMarker(
 			className,
@@ -109,6 +123,7 @@ export class CursorMarker implements LayerMarker {
 	): CursorMarker | null {
 		let cursorPos = tableCellView.coordsAtPos(range.head, range.assoc || 1);
 		if (!cursorPos) return null;
+
 		let baseCoords = getBaseCoords(baseView);
 		return new CursorMarker(
 			className,
@@ -118,31 +133,4 @@ export class CursorMarker implements LayerMarker {
 			useTransform
 		);
 	}
-
-	/**
-	 * Adjust the marker position. Should not be run immediately in `update`
-	 * call, use `requestAdjust` instead.
-	 */
-	private adjust = (cursorEl: HTMLElement): void => {
-		// Hack to smooth the movement and remove jittering
-		requestAnimationFrame(() => {
-			if (this.useTransform) cursorEl.setCssStyles({
-				transform: `translateX(${this.left}px) translateY(${this.top}px)`
-			});
-			else cursorEl.setCssStyles({
-				left: this.left + 'px',
-				top: this.top + 'px'
-			});
-	
-			cursorEl.setCssStyles({ height: this.height + 'px' });
-		})
-	}
-
-	/**
-	 * Debounce the adjuster within 10 miliseconds. Use this to update the
-	 * marker.
-	 */
-	private requestAdjust = debounce((adjuster: typeof this.adjust, cursorEl: HTMLElement) => {
-		adjuster(cursorEl);
-	}, 10, false);
 }
