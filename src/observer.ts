@@ -5,25 +5,30 @@ import { editorInfoField } from './obsidian';
 const LEFT_MOUSE_BTN = 0;
 
 /**
- * Pointing down handler, used for `tableCellObserver`.
+ * Get `pointerdown` event handler that set `cm-hasTablePointed` class to
+ * the current view's scroller.
+ * 
+ * @param view `EditorView` that will be bound to the handler.
  */
-const onEditorPointerdown = (view: EditorView) => function (evt: PointerEvent): void {
-	if (evt.button !== LEFT_MOUSE_BTN) return;
+function getPointerDownHandler(view: EditorView): (evt: PointerEvent) => void {
+	return evt => {
+		if (evt.button !== LEFT_MOUSE_BTN) return;
 
-	// Scan for pointed table.
-	let path = evt.composedPath(),
-		isTablePointed = path.some(
-			target => target instanceof HTMLElement && target.hasClass('table-wrapper')
-		);
+		let path = evt.composedPath(),
+			win = evt.win.window;
+		
+		// Scan for pointed table.
+		let isTablePointed = path.some(target => target instanceof win.HTMLElement && target.hasClass('table-wrapper'));
 
-	if (isTablePointed) {
-		let { scrollDOM } = view;
-		scrollDOM.addClass('cm-hasTablePointed');
-		// Remove the class after releasing the pointer.
-		scrollDOM.win.addEventListener('pointerup', () => {
-			scrollDOM.removeClass('cm-hasTablePointed');
-		}, { once: true });
-	}
+		if (isTablePointed) {
+			let { scrollDOM } = view;
+			scrollDOM.addClass('cm-hasTablePointed');
+			// Remove the class after releasing the pointer.
+			scrollDOM.win.addEventListener('pointerup', () => {
+				scrollDOM.removeClass('cm-hasTablePointed');
+			}, { once: true });
+		}
+	};
 }
 
 /**
@@ -42,8 +47,7 @@ export const tableCellFocusChange = Annotation.define<boolean>();
  */
 export const tableCellObserver = ViewPlugin.define(view => {
 	let { editor } = view.state.field(editorInfoField),
-		pluginValue: PluginValue = {},
-		aborter = new AbortController();
+		pluginValue: PluginValue = {};
 
 	// Exclusive to table cell EditorView.
 	if (editor?.inTableCell && editor.activeCM === view) {
@@ -56,12 +60,9 @@ export const tableCellObserver = ViewPlugin.define(view => {
 
 	// Exclusive to main EditorView.
 	if (editor?.cm === view) {
-		view.dom.addEventListener(
-			'pointerdown',
-			onEditorPointerdown(view),
-			{ capture: true, signal: aborter.signal }
-		);
-		pluginValue.destroy = () => aborter.abort();
+		let handler = getPointerDownHandler(view);
+		view.dom.addEventListener('pointerdown', handler, true);
+		pluginValue.destroy = () => view.dom.removeEventListener('pointerdown', handler, true);
 	}
 
 	return pluginValue;
