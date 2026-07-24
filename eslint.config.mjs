@@ -1,48 +1,74 @@
-import typescriptEslint from "@typescript-eslint/eslint-plugin";
-import globals from "globals";
-import tsParser from "@typescript-eslint/parser";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import { defineConfig } from 'eslint/config';
+import globals from 'globals';
+import eslint from '@eslint/js';
+import tslint from 'typescript-eslint';
+import obsidianmdlint from 'eslint-plugin-obsidianmd';
+import tsParser from '@typescript-eslint/parser';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-	baseDirectory: __dirname,
-	recommendedConfig: js.configs.recommended,
-	allConfig: js.configs.all
-});
-
-export default [{
-	ignores: [
-		"**/node_modules/",
-		"**/main.js",
-		"**/.deprecated/",
-		"**/esbuild.config.mjs",
-		"**/eslint.config.mjs"
+export default defineConfig({
+	files: [
+		'**/*.{ts,mts}'
 	],
-}, ...compat.extends(
-	"eslint:recommended",
-	"plugin:@typescript-eslint/eslint-recommended",
-	"plugin:@typescript-eslint/recommended",
-), {
-	plugins: {
-		"@typescript-eslint": typescriptEslint,
-	},
-
+	ignores: [
+		'**/.deprecated/',
+		'**/@external',
+		'**/node_modules/',
+		'**/libs/',
+		'**/dist/',
+		'**/main.js',
+		'**/esbuild.config.mjs',
+		'**/eslint.config.mjs'
+	],
+	extends: [
+		eslint.configs.recommended,
+		...tslint.configs.strictTypeChecked,
+		...tslint.configs.stylisticTypeChecked,
+		...obsidianmdlint.configs.recommended
+	],
 	languageOptions: {
-		globals: {
-			...globals.node,
-		},
+		globals: { ...globals.node },
 		parser: tsParser,
-		ecmaVersion: 6,
-		sourceType: "module",
+		parserOptions: {
+			projectService: true,
+			tsconfigRootDir: import.meta.dirname
+		},
+		ecmaVersion: 'latest',
+		sourceType: 'module'
 	},
-
 	rules: {
-		"no-prototype-builtins": "off",
-		"prefer-const": "off",
-		"@typescript-eslint/ban-ts-comment": "off"
-	},
-}];
+		'prefer-const': 'off',
+		'no-unused-vars': 'off',
+		'no-unused-labels': 'off',
+		'no-undef': 'off',
+		'no-prototype-builtins': 'off',
+		'no-cond-assign': 'off',
+		'obsidianmd/ui/sentence-case': [
+			'error', { ignoreWords: ['cursor'] }
+		],
+		'obsidianmd/ui/sentence-case-locale-module': [
+			'error', { brands: [] }
+		],
+		'@typescript-eslint/no-empty-function': 'off',
+		'@typescript-eslint/await-thenable': 'off',
+		'@typescript-eslint/no-unsafe-argument': 'off',
+		'@typescript-eslint/no-unsafe-assignment': 'off',
+		'@typescript-eslint/no-unsafe-member-access': 'off',
+		'@typescript-eslint/no-unsafe-call': 'off',
+		'@typescript-eslint/no-explicit-any': [
+			'error', { ignoreRestArgs: true }
+		],
+		'@typescript-eslint/no-unused-vars': [
+			'error', { args: 'none' },
+		],
+		'@typescript-eslint/no-confusing-void-expression': [
+			'error', {
+				ignoreVoidOperator: true,
+				ignoreArrowShorthand: true
+			}
+		],
+		'@typescript-eslint/no-non-null-assertion': 'warn',
+		'@typescript-eslint/restrict-template-expressions': [
+			'error', { allowNumber: true }
+		]
+	}
+});
