@@ -10,6 +10,11 @@ import type {
 	ViewPlugin,
 	ViewUpdate
 } from './@codemirror/view';
+import type _i18next from 'i18next';
+
+declare global {
+	const i18next: typeof _i18next;
+}
 
 declare module '@codemirror/view' {
 	type LayerConfig = Parameters<typeof layer>[0];
