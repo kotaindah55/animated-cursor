@@ -9,19 +9,12 @@ export interface AnimatedCursorSettings {
 	useTransform: boolean;
 }
 
-export const DEFAULT_SETTINGS: AnimatedCursorSettings = {
-	useTransform: true
-}
-
-function iterMarkdownView(app: App, callback: (view: MarkdownView) => unknown): void {
-	app.workspace.getLeavesOfType('markdown').forEach(leaf => {
-		if (leaf.view instanceof MarkdownView)
-			callback(leaf.view);
-	});
+function getDefaultSettings(): AnimatedCursorSettings {
+	return { useTransform: true };
 }
 
 export class AnimatedCursorPlugin extends Plugin {
-	public settings!: AnimatedCursorSettings;
+	public override readonly settings: AnimatedCursorSettings;
 
 	/**
 	 * If any, it indicates that the cursor plugin is already patched.
@@ -59,14 +52,12 @@ export class AnimatedCursorPlugin extends Plugin {
 
 	public override onunload(): void {
 		this.cancelPatchAttempt();
+	private async loadSettings(): Promise<void> {
+		Object.assign(this.settings, await this.loadData());
+	}
 
-		iterMarkdownView(this.app, view => {
-			if (!this.cursorPlugin?.spec) return;
-			let layer = view.editor.cm.plugin(this.cursorPlugin.spec);
-			layer?.dom.removeClass('cm-blinkLayer');
-		});
-
-		console.log('Unload Animated Cursor plugin');
+	private async saveSettings(): Promise<void> {
+		await this.saveData(this.settings);
 	}
 
 	/**
