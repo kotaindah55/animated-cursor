@@ -1,4 +1,4 @@
-import type { EditorState } from '@codemirror/state';
+import type { EditorState } from './@codemirror/state';
 import type {
 	EditorView,
 	layer,
@@ -9,7 +9,7 @@ import type {
 	PluginValue,
 	ViewPlugin,
 	ViewUpdate
-} from '@codemirror/view';
+} from './@codemirror/view';
 
 declare module '@codemirror/view' {
 	type LayerConfig = Parameters<typeof layer>[0];

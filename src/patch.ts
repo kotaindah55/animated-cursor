@@ -1,8 +1,6 @@
-import type { EditorState } from '@codemirror/state';
-import type { EditorView, ViewUpdate } from '@codemirror/view';
 import { around } from 'monkey-around';
-import { debounce, editorInfoField } from './obsidian';
-import type { CursorLayerView } from './types';
+import type { EditorView, LayerConfig, ViewUpdate } from './@codemirror/view';
+import { type App, type Debouncer, debounce, MarkdownView } from './obsidian';
 import type { AnimatedCursorSettings } from './main';
 import { tableCellFocusChange } from './observer';
 import { CursorMarker } from './cursor-marker';

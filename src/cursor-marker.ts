@@ -1,15 +1,5 @@
-import type { SelectionRange } from '@codemirror/state';
-import { type EditorView, type LayerMarker, Direction } from '@codemirror/view';
-import { debounce } from './obsidian';
-
-/**
- * Get scroller top and left position. Based on CodeMirror's `getBase()`
- * function with some modifications.
- * 
- * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
- * and others at CodeMirror. Licensed under MIT.
- * 
- * @see https://github.com/codemirror/view/blob/main/src/layer.ts
+import type { SelectionRange } from './@codemirror/state';
+import type { EditorView, LayerMarker } from './@codemirror/view';
  */
 function getBaseCoords(view: EditorView): { top: number, left: number } {
 	let scrollerRect = view.scrollDOM.getBoundingClientRect(),

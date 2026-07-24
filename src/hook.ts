@@ -1,4 +1,9 @@
-import { EditorView, type LayerConfig, type MeasureRequest, type PluginInstance } from '@codemirror/view';
+import {
+	type LayerConfig,
+	type MeasureRequest,
+	type PluginInstance,
+	EditorView
+} from './@codemirror/view';
 import type { CursorPluginInstance } from './types';
 
 /**
