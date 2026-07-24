@@ -87,42 +87,17 @@ export function patchCursorLayerConfig(plugin: AnimatedCursorPlugin, cursorLayer
 }
 
 /**
- * Debounce the cursor blink by delaying its layer element from being
- * blink-animated, instead of changing its animation keyframe each layer
- * update.
- * 
- * This is according to the cursor blink mechanism in VSCode.
+ * Perform post-patch action. In this case, remove `animation-duration`
+ * and `animation-name` CSS properties from cursor layers.
  */
-const blinkDebouncer = debounce((layerEl: HTMLElement) => {
-	layerEl.addClass('cm-blinkLayer');
-}, 350, true);
-
-/**
- * Get table cell's `EditorView` in the current editor if any.
- * 
- * @param state Associated `EditorState`.
- */
-function getTableCellCm(state: EditorState): EditorView | undefined {
-	let editor = state.field(editorInfoField).editor,
-		{ activeCM } = editor ?? {};
-
-	if (!editor?.inTableCell) return;
-
-	return activeCM;
-}
-
-/**
- * Patch the cursor layer and return the uninstaller to revert the patch.
- * 
- * @returns A patch uninstaller.
- * 
- * @remark **Should not be executed again after successful hook attemp**
- */
-export function patchCursorLayer(cursorPlugin: CursorLayerView, settings: AnimatedCursorSettings) {
-	return around(cursorPlugin.layer, {
-		// Patch the update handler.
-		update: () => layerUpdaterPatch,
-		// Patch the marker generator method.
-		markers: () => layerMarkersPatch(settings)
+export function adjustCursorLayer(app: App, cursorPlugin: CursorPlugin): void {
+	app.workspace.getLeavesOfType('markdown').forEach(leaf => {
+		if (leaf.view instanceof MarkdownView) {
+			let layer = leaf.view.editor.cm.plugin(cursorPlugin);
+			layer?.dom.setCssStyles({
+				animationDuration: '',
+				animationName: ''
+			});
+		}
 	});
 }
