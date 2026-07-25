@@ -80,20 +80,16 @@ export class AnimatedCursorPlugin extends Plugin {
 	 */
 	private tryPatch(editor: Editor): void {
 		if (this.alreadyPatched) {
+			// Cancel patch attempt if CursorLayerConfig has already been patched.
 			this.cancelPatchAttempt();
-			DEVEL: console.warn('Animated cursor: try to patch the cursor while it has already been patched');
 			return;
 		}
-
-		DEVEL: console.debug('Animated Cursor: try to patch the cursor');
 
 		let editorView = editor.cm,
 			cursorPluginInstance = hookCursorPluginInstance(editorView);
 
-		if (!cursorPluginInstance?.value) {
-			DEVEL: console.debug('Animated Cursor: patch failed');
-			return;
-		}
+		// Fail patch.
+		if (!cursorPluginInstance?.value) return;
 
 		// Will be uninstalled automatically on plugin unload.
 		patchCursorLayerConfig(this, cursorPluginInstance.value.layer);
@@ -105,8 +101,6 @@ export class AnimatedCursorPlugin extends Plugin {
 
 		// Unregister the handler after a successful attempt.
 		this.cancelPatchAttempt();
-
-		DEVEL: console.debug('Animated Cursor: patch successful');
 	}
 
 	private cancelPatchAttempt(): void {
