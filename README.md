@@ -44,14 +44,16 @@ Simply move the cursor by pressing arrow keys, clicking or dragging using your m
 ## ⚙️ Adjustment
 
 Via [Style Settings][style-settings] plugin you can:
+- adjust the tickness in pixels,
+- adjust the color and transparency,
 - adjust the cursor speed in miliseconds,
 - adjust the blink rate in miliseconds,
 - set the blink count in a sequence,
 - toggle infinity blinking.
 
 Additionally, in the "Animated Cursor" plugin settings, you have an option to make the cursor move slightly more smoothly:
-- If turned on, move transition uses `transform` property, but the cursor seems to appear blurry.
-- If turned off, it uses `top` and `left` properties.
+- If turned on, move transition uses `translate` property, but the cursor seems to appear blurry.
+- If turned off, it uses `top` and `left` properties, but may have performance impact.
 
 > [!Note]
 >
