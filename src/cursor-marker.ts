@@ -9,7 +9,9 @@ import { getBaseCoords } from './utils';
 function adjustCursor(marker: CursorMarker, cursorEl: HTMLElement): void {
 	// Hack to smooth the movement and remove jittering
 	cursorEl.win.requestAnimationFrame(() => {
-		let styles: Partial<CSSStyleDeclaration> = {};
+		let styles: Partial<CSSStyleDeclaration> = {
+			height: `${marker.height}px`
+		};
 
 		if (marker.useTransform) {
 			styles.transform = `translateX(${marker.left}px) translateY(${marker.top}px)`;
