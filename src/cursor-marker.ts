@@ -14,7 +14,7 @@ function adjustCursor(marker: CursorMarker, cursorEl: HTMLElement): void {
 		};
 
 		if (marker.useTransform) {
-			styles.transform = `translateX(${marker.left}px) translateY(${marker.top}px)`;
+			styles.translate = `${marker.left}px ${marker.top}px`;
 		} else {
 			styles.left = `${marker.left}px`;
 			styles.top = `${marker.top}px`;
