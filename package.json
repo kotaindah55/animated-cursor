@@ -9,8 +9,9 @@
 		"version": "npx tsx scripts/version-bump.mts",
 		"changelog": "npx tsx scripts/print-changelog.mts",
 		"publish": "npx tsx scripts/publish.mts",
-		"publish-no-package-lock": "npx tsx scripts/publish.mts no-package-lock",
-		"lock": "npx tsx scripts/lock-package.mts"
+		"publish:no-package-lock": "npx tsx scripts/publish.mts no-package-lock",
+		"lock": "npx tsx scripts/lock-package.mts",
+		"lock:no-push": "npx tsx scripts/lock-package.mts no-push"
 	},
 	"keywords": [
 		"obsidian-plugin"
