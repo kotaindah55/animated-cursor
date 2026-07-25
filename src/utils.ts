@@ -1,5 +1,12 @@
 import type { EditorState } from './@codemirror/state';
-import { type EditorView, Direction } from './@codemirror/view';
+import {
+	type EditorView,
+	type PluginInstance,
+	type PluginSource,
+	type PluginValue,
+	Direction,
+	ViewPlugin
+} from './@codemirror/view';
 import { editorInfoField } from './obsidian';
 
 export function isFunction(val: unknown): val is (...args: unknown[]) => unknown {
@@ -39,4 +46,21 @@ export function getBaseCoords(view: EditorView): { top: number, left: number } {
 		top: scrollerRect.top - view.scrollDOM.scrollTop * view.scaleY,
 		left: left - view.scrollDOM.scrollLeft * view.scaleX
 	};
+}
+
+/**
+ * Get `ViewPlugin` from `PluginInstance` with backward compatibilty.
+ * 
+ * @returns May return `null`.
+ */
+export function getViewPluginFromInstance<V extends PluginValue, Arg>(
+	instance: PluginInstance<V, Arg>
+): ViewPlugin<V, Arg> | null {
+	// In earlier version of CodeMirror 6, ViewPlugin instance was assigned
+	// directly to PluginInstance.spec.
+	type Spec = PluginSource<V, Arg> | ViewPlugin<V, Arg>;
+	let spec = instance.spec as Spec | null;
+	return spec instanceof ViewPlugin
+		? spec
+		: spec?.plugin ?? null;
 }

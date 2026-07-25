@@ -25,7 +25,7 @@ declare module '@codemirror/view' {
 	 * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
 	 * and others at CodeMirror. Licensed under MIT.
 	 * 
-	 * @see https://github.com/codemirror/view/blob/main/src/layer.ts
+	 * @see https://code.haverbeke.berlin/codemirror/view/src/branch/main/src/layer.ts
 	 */
 	interface LayerView extends PluginValue {
 		readonly layer: LayerConfig;
@@ -42,10 +42,10 @@ declare module '@codemirror/view' {
 	}
 
 	/**
-	 * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
+	 * Copyright (C) 2018-2026 by Marijn Haverbeke <marijn@haverbeke.berlin>
 	 * and others at CodeMirror. Licensed under MIT.
 	 * 
-	 * @see https://github.com/codemirror/view/blob/main/src/extension.ts
+	 * @see https://code.haverbeke.berlin/codemirror/view/src/branch/main/src/extension.ts
 	 */
 	interface MeasureRequest<T> {
 		key?: unknown;
@@ -54,18 +54,29 @@ declare module '@codemirror/view' {
 	}
 
 	/**
-	 * Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin>
+	 * Copyright (C) 2018-2026 by Marijn Haverbeke <marijn@haverbeke.berlin>
 	 * and others at CodeMirror. Licensed under MIT.
 	 * 
-	 * @see https://github.com/codemirror/view/blob/main/src/extension.ts
+	 * @see https://code.haverbeke.berlin/codemirror/view/src/branch/main/src/extension.ts
 	 */
-	interface PluginInstance<T extends PluginValue = PluginValue> {
+	interface PluginInstance<V extends PluginValue = PluginValue, Arg = undefined> {
 		mustUpdate: ViewUpdate | null;
-		spec: ViewPlugin<T> | null;
-		value: T | null;
+		spec: PluginSource<V, Arg> | null;
+		value: V | null;
 		deactivate(): void;
 		destroy(view: EditorView): void;
-		update(view: EditorView): PluginInstance<T>;
+		update(view: EditorView): PluginInstance<V>;
+	}
+
+	/**
+	 * Copyright (C) 2018-2026 by Marijn Haverbeke <marijn@haverbeke.berlin>
+	 * and others at CodeMirror. Licensed under MIT.
+	 * 
+	 * @see https://code.haverbeke.berlin/codemirror/view/src/branch/main/src/extension.ts
+	 */
+	interface PluginSource<V extends PluginValue, Arg> {
+		arg: Arg;
+		plugin: ViewPlugin<V, Arg>;
 	}
 }
 

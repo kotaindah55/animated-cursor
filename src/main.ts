@@ -13,6 +13,7 @@ import { tableCellObserver } from './observer';
 import { hookCursorPluginInstance } from './hook';
 import type { CursorPlugin } from './types';
 import { cursorLayerCleanUp } from './clean-up';
+import { getViewPluginFromInstance } from './utils';
 
 export interface AnimatedCursorSettings {
 	useTransform: boolean;
@@ -97,7 +98,7 @@ export class AnimatedCursorPlugin extends Plugin {
 		// Will be uninstalled automatically on plugin unload.
 		patchCursorLayerConfig(this, cursorPluginInstance.value.layer);
 		this.alreadyPatched = true;
-		this.cursorPlugin = cursorPluginInstance.spec;
+		this.cursorPlugin = getViewPluginFromInstance(cursorPluginInstance);
 
 		// Post-patch action.
 		if (this.cursorPlugin) adjustCursorLayer(this.app, this.cursorPlugin);
