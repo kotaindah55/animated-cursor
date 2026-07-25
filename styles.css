@@ -7,7 +7,7 @@ settings:
 	-
 		id: cursor-thickness
 		title: Cursor thickness
-		description: The thickness of the cursor in pixels
+		description: The thickness of the cursor in pixels.
 		type: variable-number
 		format: px
 		default: 2
@@ -38,12 +38,12 @@ settings:
 		type: class-toggle
 	-
 		id: cursor-override-color
-		title: Change cursor color
-		description: Override the default cursor color
+		title: Override cursor color
+		description: Override the default cursor color.
 		type: class-toggle
 	- 
 		id: cursor-color
-		title: Cursor color
+		title: Enable “Override cursor color” first to change the cursor's color.
 		type: variable-themed-color
 		format: hex
 		opacity: true
@@ -52,12 +52,12 @@ settings:
 */
 
 :root {
+	--cursor-thickness: 2px;
 	--cursor-move-speed: 80ms;
 	--cursor-move-easing: ease;
 	--cursor-blink-rate: 1000ms;
 	--cursor-blink-count: 10;
 	--cursor-blink-easing: ease-in-out;
-	--cursor-width: 2px;
 }
 
 @keyframes cm-cursor-blink {
