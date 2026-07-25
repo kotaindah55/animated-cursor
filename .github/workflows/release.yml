@@ -1,7 +1,7 @@
 name: Release Obsidian plugin
 
 env:
-  PLUGIN_NAME: better-embedded-canvas
+  PLUGIN_NAME: animated-cursor
   PLUGIN_VERSION: ${GITHUB_REF#refs/tags/}
 
 on:
