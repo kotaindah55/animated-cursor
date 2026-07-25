@@ -1,3 +1,14 @@
+[1.4.0]
+### New features
+- Adjustable cursor width and color through Style Settings plugin.
+- Support latest Obsidian setting API.
+- Add Indonesian translation.
+
+### Bug fix
+Fix cursor disappearance in Bases search field. (#6)
+
+Thanks to @playerofgames for the fix and additional style settings.
+---
 [1.3.4]
 ### Improvement
 Backward compatibility support up to Obsidian 1.6.7. Solve #3.
