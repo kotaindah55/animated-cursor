@@ -23,6 +23,7 @@ data.json
 
 # Build folder
 build
+dist
 
 # Deprecated code
 .deprecated
