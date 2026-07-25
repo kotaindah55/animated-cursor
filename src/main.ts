@@ -20,7 +20,7 @@ export interface AnimatedCursorSettings {
 }
 
 function getDefaultSettings(): AnimatedCursorSettings {
-	return { useTransform: true };
+	return { useTransform: false };
 }
 
 export class AnimatedCursorPlugin extends Plugin {
