@@ -1,6 +1,6 @@
 import { spawnSync } from "child_process";
 import { readFileSync } from "fs";
-import { ManifestConfig } from "./version-bump.mjs";
+import type { ManifestConfig } from "./version-bump.mjs";
 import process from "process";
 
 let { version } = JSON.parse(readFileSync("manifest.json", "utf8")) as ManifestConfig;

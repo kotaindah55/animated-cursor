@@ -2,12 +2,12 @@ import { readFileSync, writeFileSync } from "fs";
 import { getLastChangelog } from "./utils.mjs";
 import { execSync } from "child_process";
 
-export type ManifestConfig = {
+export interface ManifestConfig {
 	version: string;
 	minAppVersion: string;
 }
 
-export type PackageConfig = {
+export interface PackageConfig {
 	version: string;
 }
 

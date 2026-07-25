@@ -20,14 +20,14 @@ export async function getLastChangelog(): Promise<ChangelogDesc> {
 		if (!version) {
 			if (!lineIndex) version = VERSION_VALIDATOR.exec(line)?.[1] ?? "";
 			if (!version) {
-				changelogFile.close();
+				void changelogFile.close();
 				throw Error("Not a valid version token!");
 			}
 		}
 
 		else {
 			if (END_OF_CHANGELOG.test(line)) {
-				changelogFile.close();
+				void changelogFile.close();
 				break;
 			}
 			changelog += line + "\n";

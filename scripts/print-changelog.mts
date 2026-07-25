@@ -1,6 +1,6 @@
 import { getLastChangelog } from "./utils.mjs";
 import { readFileSync, appendFileSync } from "fs";
-import { ManifestConfig } from "./version-bump.mjs";
+import type { ManifestConfig } from "./version-bump.mjs";
 
 let { changelog, version } = await getLastChangelog(),
 	manifest = JSON.parse(readFileSync("manifest.json", "utf8")) as ManifestConfig;
