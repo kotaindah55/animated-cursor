@@ -1,5 +1,6 @@
 import { around } from 'monkey-around';
 import type { EditorView, LayerConfig, ViewUpdate } from './@codemirror/view';
+import { EditorSelection } from './@codemirror/state';
 import { type App, type Debouncer, debounce, MarkdownView } from './obsidian';
 import type { AnimatedCursorPlugin } from './main';
 import { tableCellFocusChange } from './observer';
@@ -59,18 +60,34 @@ export function patchCursorLayerConfig(plugin: AnimatedCursorPlugin, cursorLayer
 
 		// Patch marker builder.
 		markers: () => function (view: EditorView): CursorMarker[] {
-			let { state } = view,
-				tableCellView: EditorView | undefined,
+			let tableCellView: EditorView | undefined,
+				selection: EditorSelection,
 				cursors: CursorMarker[] = [];
-			
-			if (!view.hasFocus) tableCellView = getTableCellCM(state);
-			if (tableCellView) state = tableCellView.state;
+
+			// It's possible that the main view has lost focus due to the table cell
+			// gaining focus.
+			if (!view.hasFocus) tableCellView = getTableCellCM(view.state);
+			// Omit any cursor from the table cell.
 			if (view === tableCellView) return cursors;
 
-			for (let range of state.selection.ranges) {
+			if (tableCellView) {
+				// In Obsidian 1.13.7, the value of the table cell's SelectionRange.from
+				// may be null. (due to a bug?)
+				let tableCellSelection = tableCellView.state.selection;
+				if (tableCellSelection.ranges.every(range => Number.isNumber(range.from))) {
+					selection = tableCellSelection;
+				} else {
+					selection = EditorSelection.single(0);
+				}
+			} else {
+				selection = view.state.selection;
+			}
+
+
+			for (let range of selection.ranges) {
 				// Primary cursor will be drawn as DOM, opposite to what Obsidian
 				// implemented, so the primary is able to be animated.
-				let isPrimary = range == state.selection.main,
+				let isPrimary = range == selection.main,
 					className = 'cm-cursor ' + (isPrimary ? 'cm-cursor-primary' : 'cm-cursor-secondary');
 
 				let cursorMarker = tableCellView
