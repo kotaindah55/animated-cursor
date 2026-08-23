@@ -1,3 +1,7 @@
+[1.4.1]
+### Bug fix
+- Throws an error after clicking on a table sometimes.
+---
 [1.4.0]
 ### New features
 - Adjustable cursor width and color through Style Settings plugin.
